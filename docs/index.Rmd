@@ -273,7 +273,7 @@ class: center, middle, inverse
 
 .center[
 ![](https://media.giphy.com/media/MdA16VIoXKKxNE8Stk/giphy.gif)
-
+]
 ---
 class: center, middle, inverse
 
@@ -304,7 +304,7 @@ class: center, middle, inverse
 * *Trimming*
 
 
-[Click aqui](colgar el pipeline)
+[Click aqui](https://github.com/khidalgo85/Metagenoma_Total_Shotgun)
 ---
 class: center, middle, inverse
 
