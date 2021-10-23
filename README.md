@@ -179,8 +179,8 @@ sequências cortas (Illumina paired end) usando *FastQC*, com o objetivo
 de determianr se é necessário trimar ou filtrar as sequências da baixa
 qualidade para nos próximos pasos.
 
-Esta etapa é para identificar principalmente as sequências \*\*outlier\*
-com baixa qualidade (*P**h**r**e**d**S**c**o**r**e* &lt; 20)
+Esta etapa é para identificar principalmente as sequências *outlier* com
+baixa qualidade (*Q* &lt; 20)
 
 Ative o ambiente `QualityControl`:
 
@@ -190,7 +190,7 @@ Ative o ambiente `QualityControl`:
 > de baja calidad en los próximos pasos.
 >
 > Ésta etapa es para identificar principalmente las secuencias *outlier*
-> con baja calidad (*P**h**r**e**d**S**c**o**r**e* &lt; 20).
+> con baja calidad (*Q* &lt; 20).
 >
 > Active el ambiente `QualityControl`:
 
@@ -236,7 +236,7 @@ detalhada de cada output gerado.
 
 🇧🇷 \* Reportes html `.html`: Aqui é possível ver toda informação de
 qualidade graficamente. \* Zip files `.zip`: Aqui se encontram cada um
-dos gráficos de maneira separada. \*IGNORE\*\*
+dos gráficos de maneira separada. **IGNORE**
 
 Descaregue os arquivos `html` e explore no seu *web browser*.
 
