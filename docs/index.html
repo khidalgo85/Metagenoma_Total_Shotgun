@@ -4,9 +4,9 @@
     <title>Colaboración Científica GIBIM/UIS - GEMM/UNICAMP</title>
     <meta charset="utf-8" />
     <meta name="author" content="Kelly Hidalgo" />
-    <meta name="date" content="2021-10-21" />
+    <meta name="date" content="2021-10-23" />
     <script src="index_files/header-attrs-2.9/header-attrs.js"></script>
-    <script type="application/json" id="xaringanExtra-editable-docid">{"id":"xc49e23c2eb947dfaf5ffa1eb2a3ccf2","expires":1}</script>
+    <script type="application/json" id="xaringanExtra-editable-docid">{"id":"xee81f44ec9144f09d159cc61d98e3ae","expires":1}</script>
     <script src="index_files/himalaya-1.1.0/himalaya.js"></script>
     <script src="index_files/js-cookie-3.0.0/js.cookie.js"></script>
     <link href="index_files/editable-0.2.6/editable.css" rel="stylesheet" />
@@ -36,7 +36,7 @@ class: center, middle, inverse, title-slide
 ## Entrenamiento en Metagenómica
 ### Kelly Hidalgo
 ### Grupo de Ecologia Microbiana e Multi-ômicas
-### 2021-10-21
+### 2021-10-23
 
 ---
 
@@ -226,8 +226,8 @@ class: hide_logo
 
 * La calidad de las secuencias está determinada por la nota o *score* *Phred*. Según la siguiente ecuación:
 
-$$ q = -10 * log_{10}(P)$$
-Donde, `\(q\)` es la nota *Phred* e `\(P\)` es la probabilidad de que la base esté errada. Así entonces:
+`$$q = -10 * log_{10}(P)$$`
+Donde, *q* es la nota *Phred* e *P* es la probabilidad de que la base esté errada. Así entonces:
 
 * `\(q = 10\)` significa 1 base errada a cada 10 (90%); `\(p = 0.1\)`
 * `\(q = 20\)` significa 1 base errada a cada 100 (99%); `\(p = 0.01\)`
@@ -274,7 +274,7 @@ Es el proceso de eliminación de las lecturas con baja calidad. Es posible filtr
 
 
 **Programas**
-*Nota: Exclusivos para secuencias cortas*
+
 * Trimmomatic
 * Trimgalore
 * Fastx tool kit

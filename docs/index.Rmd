@@ -214,8 +214,8 @@ class: hide_logo
 
 * La calidad de las secuencias está determinada por la nota o *score* *Phred*. Según la siguiente ecuación:
 
-$$ q = -10 * log_{10}(P)$$
-Donde, $q$ es la nota *Phred* e $P$ es la probabilidad de que la base esté errada. Así entonces:
+$$q = -10 * log_{10}(P)$$
+Donde, *q* es la nota *Phred* e *P* es la probabilidad de que la base esté errada. Así entonces:
 
 * $q = 10$ significa 1 base errada a cada 10 (90%); $p = 0.1$
 * $q = 20$ significa 1 base errada a cada 100 (99%); $p = 0.01$
@@ -262,7 +262,7 @@ Es el proceso de eliminación de las lecturas con baja calidad. Es posible filtr
 
 
 **Programas**
-*Nota: Exclusivos para secuencias cortas*
+
 * Trimmomatic
 * Trimgalore
 * Fastx tool kit
