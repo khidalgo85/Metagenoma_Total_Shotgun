@@ -34,9 +34,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Ferramientas bioinformáticas
 
-### Instalação
+## 0. Instalação
 
-**1. Instalção Miniconda**
+### 0.1. Anaconda
 
 🇧🇷 É recomendável instalar Anaconda, pois é a forma mais fácil para instalar as ferramentas bioinformáticas necessárias pro desenvolvimento deste pipeline. Anaconda é uma distribuição livre e aberta das linguagens *Python* e *R*, utilizada na ciência de dados e bioinformática. As diferente versões dos programas se administram mediante um sinstema de gestão chamado *conda*, o qual faz bastante simples instalar, rodar e atualizar programas. [Aqui](https://conda.io/projects/conda/en/latest/user-guide/install/index.html) se encontram as instruções para a instalação de Anaconda. 
 
@@ -46,7 +46,7 @@ Depois de instalado, *Anaconda* e o gestor *Conda*, podram ser criados *ambiente
 >
 > Después de instalado *Anaconda* y su gestor *Conda*, podran ser creados *ambientes virtuales* para la instalación de las diferentes herramientas bioinformáticas que serán usadas.
 
-**2. Instalação FastQC**
+### 0.2. FastQC
 
 🇧🇷 [FastQC](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/) é uma ferramenta para avaliar graficamente a qualidade das sequencias de Illumina.
 
@@ -85,7 +85,7 @@ Posteriormente se procede à instalação do programa:
 conda install -c bioconda fastqc
 ```
 
-**3. Instalação Trimmomatic v0.39**
+### 0.3. Trimmomatic v0.39
 
 🇧🇷 [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic) é um programa pra filtrar (remover) leituras ou *reads* curtas de baixa qualidade.
 
@@ -102,11 +102,40 @@ conda activate QualityControl
 # Instale Trimmomatic
 conda install -c bioconda trimmomatic
 ```
+### 0.4. NonPareil v3.3.3
+
+🇧🇷 [NonPareil](https://nonpareil.readthedocs.io/en/latest/) é uma ferramenta que será usada para o cálculo da cobertura dos metagenomas. Devido a incompatibilidades com a versão do Python usado para escrever esta ferramenta, ela será instalada em um ambiente diferente ao de controle de qualidade, chamado **NonPareil**.
+
+> 🇪🇸 [NonPareil](https://nonpareil.readthedocs.io/en/latest/) es una herramienta que será usada para el cálculo de la cobertura de los metagenomas. Debido a incompatibilidades con la versión de Python usado para escribir esta herramienta, será instalada en un ambiente diferente al de control de calidad, llamado **NonPareil**.
+
+```
+# Crie o ambiente
+conda create -n NonPareil
+
+# Instale NonPareil
+conda install -c bioconda nonpareil
+```
+### 0.5. Mash v2.3
+
+🇧🇷 [Mash](https://mash.readthedocs.io/en/latest/) é uma ferramenta que usa a técnica de redução da dimensionalidade *MinHash* para calcular as distâncias um a um entre os datasets, assim, é possível determinar se os metagenomas são similares ou não para serem montados usando *co-assembly*. 
+Por ser considerada uma ferramenta que participa no processo de assembly, será instalada dentro de um ambiente virtual chamado **Assembly**.
+
+> 🇪🇸 [Mash](https://mash.readthedocs.io/en/latest/) es una herramienta que usa la técnica de reducción de dimensionalidad *MinHash* para calcular las distancias un a un entre los datasets, así, es posible determinar si los metagenomas son similares o no para ser ensamblados usando *co-assembly*.
+>
+> Por ser considera una herramienta que participa en el proceso de ensamble, será instalada dentro de un ambiente virtual llamado **Assebly**.
+
+```
+# Crie o ambiente virtual
+conda create -n Assembly
+
+# Instale Mash
+conda install -c bioconda mash
+```
 
 ---
-## 0. Organizando os dados
+## 1. Organizando os dados
 
-### 0.1. Sequências
+### 1.1. Sequências
 
 🇧🇷 En este tutorial serão usados 4 meteganomas, pode decarregá-los [aqui](colgarlosdatos.com).
 
@@ -130,9 +159,9 @@ cd 00.RawData/
 
 > 🇪🇸 Use el comando `wget` para descargarlos los datos desde este [link](colgarlosdatos.com).
 
-## 1. Controle de Qualidade
+## 2. Controle de Qualidade
 
-### 1.1. FastQC
+### 2.1. FastQC
 
 🇧🇷 A primeira etapa do processo é a avaliação da qualidade das sequências cortas (Illumina paired end) usando *FastQC*, com o objetivo de determianr se é necessário trimar ou filtrar as sequências da baixa qualidade para nos próximos pasos. 
 
@@ -174,7 +203,10 @@ fastqc [opções] input -o output
 
 **Outputs**
 
-🇧🇷 * Reportes html `.html`: Aqui é possível ver toda informação de qualidade graficamente. 
+🇧🇷 
+
+* Reportes html `.html`: Aqui é possível ver toda informação de qualidade graficamente. 
+
 * Zip files `.zip`: Aqui se encontram cada um dos gráficos de maneira separada. **IGNORE**
 
 Descaregue os arquivos `html` e explore no seu *web browser*. 
@@ -184,7 +216,7 @@ Observe as estatísticas básicas que se encontram na primeira tabela. Alí, voc
 > 🇪🇸 Observe las estadísticas básicas que se encuentran en la primera tabla. Allí, ud puede saber cuantas secuencias tiene, el tamaño y el %GC. El gráfico más importante para saber la calidad de las lecturas es el primero, *Per base sequence quality*. Este gráfico es un boxblot con la distribución de los valores de calidad *Phred Score* (eje y) en cada uno de los nucleótidos de las lecturas (eje x). Se consideran secuencias de excelente calidad cuando el $Phred Score > 30$. Es normal que el pair 2 presente una calidad un poco inferior al pair 1. 
 
 
-### 1.2. Trimmomatic
+### 2.2. Trimmomatic
 
 🇧🇷 Segundo foi avaliado no controle de qualidade, pode ser necessário filtrar algumas leituras com qualidade baixa.
 
@@ -242,7 +274,126 @@ fastqc -t 10 02.CleandData/* -o 01.FastqcReports/
 
 Descargue los reportes `.html` de las secuencias pareadas (i.e. `01.FastqcReports/sample1_1_paired_fastqc.html` y `01.FastqcReports/sample1_2_paired_fastqc.html`).
 
-**Continuará...**
+### 2.3 Cobertura dos Metagenomas
+
+🇧🇷 Além de limpar e trimar as sequências com baixa qualidade, é necessário calcular a cobertura dos metagenomas.Este programa usa a redundância de reads nos metagenomas para estimar a cobertura média e prediz a quantidade de sequências que são requeridas para atingir o *"nearly complete coverage"*, definida como $≥95$%  ou $≥99$% de cobertura média. A ferramenta **NonPareil** será usada nesta etapa.
+
+Como *input* para esta análise só é necessário um pair de cada amostra, e deve estar sem compressão.
+
+
+> 🇪🇸 Además de limpiar y *trimar* las secuencias con baja calidad, es necesario calcular la cobertura de los metagenomas. Este programa usa la redundancia de las *reads* en los metagenomas para estimar la cobertura promedio y predice la cantidade de secuencias que son requeridas para conseguir el *"nearly complete coverage"*, definida como $≥95$%  o $≥99$% de la cobertura promedio. La herramienta **NonPareil** será usada en esta etapa.
+>
+> Como *input* para este análisis solo es necesario un par de cada muestra, y debe estar sin compresión. 
+
+
+```
+# Crie o diretório pra o output
+mkdir 02.NonPareil
+
+# Copie todos os pair 1 ao novo diretório
+
+cp 00.RawData/*_1.fq.gz 02.NonPareil
+
+# Entre no diretório
+
+cd 02.NonPareil 
+
+# Descomprima os arquivos 
+gunzip *.gz 
+
+# Loop para convertir todos os arquivos de fastq to fasta
+for i in ./*
+do
+SAMPLE=$(basename $i _1.fq)
+cat $i | paste - - - - | awk 'BEGIN{FS="\t"}{print ">"substr($1,2)"\n"$2}' > ${SAMPLE}_1.fasta
+done
+```
+🇧🇷 Agora está tudo pronto para rodar a análise, mas antes disso tome-se o tempo para entender o comando que vai usar. Para conhecer que é cada um dos argumentos, explore o menú de ajuda da ferramenta. 
+
+> 🇪🇸 Ahora está todo listo para correr el análisis, pero antes de eso tómese el tiempo para entender el comando que va a usar. Para conocer que es cada uno de los argumentos, explore el menú de ayuda de la herramienta.
+
+```
+# Explore o menú da ferramenta
+nonpareil --help
+
+# Comando do NonPareil para cada amostra
+nohup nonpareil -s 1d0SE_1.fasta -T alignment -f fasta -b 1d0SE -t 3 &
+```
+🇧🇷 Ao terminar esse processo, o programa terá criado varios [*outputs*](https://nonpareil.readthedocs.io/en/latest/redundancy.html#output) por cada amostra. Descarregue os arquivos `.npo`. Use o R, para gráficar as curvas de saturação. A continuação se encontra o script.
+
+> 🇪🇸 Al terminar este proceso, el programa habrá creado varios [*outputs*](https://nonpareil.readthedocs.io/en/latest/redundancy.html#output) por cada muestra. Descargue los archivos `.npo`. Use R, para gráficar las curvas de saturación. A continuación se encuentra el script.
+
+```{r, eval=FALSE}
+library(Nonpareil)
+setwd("~/NonPareil")
+samples <- read.table('samples.txt', sep='\t', header=TRUE, as.is=TRUE);
+
+attach(samples);
+nps <- Nonpareil.set(File, col=Col, labels=Name, 
+                     plot.opts=list(plot.observed=FALSE, 
+                                    ylim = c(0, 1.05),
+                                    legend.opts = FALSE))
+  
+detach(samples);
+summary(nps)
+```
+
+Vai obter um gráfico com as curvas de saturação de cada amostra, como este:
+
+.center[<img src="imgs/nonpareil.webp" width="80%">]
+
+🇧🇷 As linhas tracejadas <font color='red'> vermelha </font> e <font color='gray'> cinza </font> representam os *threshold* de 95% e 99% da cobertura média, respeitivamente. O circulo em cada curva representa a cobertura atual das amostras, o ideal é que esteja por cima do primeiro *threshold*. As curvas também apresentam a estimação de quanto esforço de sequenciamento é necessário.
+
+> 🇪🇸 Las líneas punteadas <font color='red'> roja </font> y <font color='gray'> gris </font> representam los *threshold* de 95% y 99% de cobertura promedio, respectivamente. El círculo en cada curva representa la cobertura actual de las muestras, lo ideal es que estén por encima del primer *threshold*. Las curvas también presentan la estimación de cuanto esfuerzo de secuenciación es necesario. 
+
+## 3. Montagem dos Metagenomas
+
+### 3.1 MinHash
+
+🇧🇷 Após obter as sequências limpas, de boa qualidade, e determinar a cobertura dos metagenomas, é possível fazer a montagem. No entanto, pode ser incluído um passo extra antes da montagem e é verificar a similaridade dos datasets para determinar se pode ser usada a abordagem de *co-assembly*, onde são misturadas as *reads* de vários metagenomas para gerar os contigs. O programa **Mash** usa uma técnica chamada redução de dimensionalidad *MinHash* que avalia as distâncias um a um entre os datasets. 
+
+> 🇪🇸 Después de obtener las secuencias limpias, de buena calidad, y determinar la cobertura de los metagenomas, es posible hacer el montaje. Sin embargo, puede ser incluído un paso extra antes del montaje y es verificar la similaridade de los datasets para determinar si puede ser usado el abordaje de *co-assembly*, donde son mezcladas las *reads* de varios metagenomas para generar los contigs. El programa **Mash** usa una técnica llamada reducción de dimensionalidad *MinHash* que evalua las distancias un a un entre los datasets.
+
+```
+## Crie uma pasta para o output
+mkdir 04.MinHash
+```
+
+O primeiro paso é concatenar os reads 1 e 2, e armazenar eles na nova pasta criada `04.MinHash/`.
+
+**Nota:** Se você trimou suas sequências, deve usar os arquivos gerados pelo **Trimmomatic** na pasta `03.CleanData`, se pelo contrário suas sequências estavam de boa qualidade e não foi necessário trimar, use os arquivos originais, que estão dentro da pasta `00.RawData`.
+
+> 🇪🇸 
+>
+>**Nota:** Si usted filtró sus secuencias, debe usar los archivos generados por **Trimmomatic** en el directorio `03.CleanData`, si por el contrario sus secuencias estaban de buena calidade y no fue necesario filtrar, use los archivos originales, que están dentro de la carpeta `00.RawData`.
+
+```
+for i in 03.CleanData/*_1_paired.fq
+do
+BASE=$(basename $i _1_paired.fq)
+cat $i 03.CleanData/${BASE}_2_paired.fastq > 04.MinHash/${BASE}.fq
+done
+```
+
+Then, the samples were sketched to create a combined file, it was used `mash info` to verify its content, and then estimate pairwise distances:
+
+```
+mash sketch -o 04.MinHash/reference 04.MinHash/6111_O.fq 04.MinHash/6111_W.fq 04.MinHash/AJ_5.fq 04.MinHash/DQ.fq 04.MinHash/I1.fq 04.MinHash/I2.fq 04.MinHash/K2.fq 04.MinHash/K3.fq 04.MinHash/production_well.fq 04.MinHash/QH.fq 04.MinHash/SB1.fq 04.MinHash/SB2.fq 04.MinHash/jiangsu_W15_metagenome.fq 04.MinHash/jiangsu_W2-71_metagenome.fq 04.MinHash/jiangsu_W9-18_metagenome.fq 04.MinHash/BA1.fq
+
+#verifiyng
+mash info 04.MinHash/reference.msh
+```
+
+For the last, the distances were calculate using `mash dist` and printed in the `distancesOutput.tsv` file.
+
+```
+mash dist 04.MinHash/reference.msh 04.MinHash/reference.msh -p 18 > 04.MinHash/distancesOutputFinal.tsv
+```
+
+### 3.2 Megahit
+
+
+
 
 
 
