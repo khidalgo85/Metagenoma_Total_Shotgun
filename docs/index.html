@@ -4,9 +4,9 @@
     <title>Colaboración Científica GIBIM/UIS - GEMM/UNICAMP</title>
     <meta charset="utf-8" />
     <meta name="author" content="Kelly Hidalgo" />
-    <meta name="date" content="2021-10-23" />
-    <script src="index_files/header-attrs-2.9/header-attrs.js"></script>
-    <script type="application/json" id="xaringanExtra-editable-docid">{"id":"xee81f44ec9144f09d159cc61d98e3ae","expires":1}</script>
+    <meta name="date" content="2021-11-18" />
+    <script src="index_files/header-attrs-2.11/header-attrs.js"></script>
+    <script type="application/json" id="xaringanExtra-editable-docid">{"id":"x8e14f6716124fc99c7d3d22b0277dc1","expires":1}</script>
     <script src="index_files/himalaya-1.1.0/himalaya.js"></script>
     <script src="index_files/js-cookie-3.0.0/js.cookie.js"></script>
     <link href="index_files/editable-0.2.6/editable.css" rel="stylesheet" />
@@ -36,7 +36,7 @@ class: center, middle, inverse, title-slide
 ## Entrenamiento en Metagenómica
 ### Kelly Hidalgo
 ### Grupo de Ecologia Microbiana e Multi-ômicas
-### 2021-10-23
+### 2021-11-18
 
 ---
 
@@ -317,10 +317,171 @@ class: center, middle, inverse
 
 
 [Click aqui](https://github.com/khidalgo85/Metagenoma_Total_Shotgun)
+
 ---
 class: center, middle, inverse
 
+# Teoría Parte III: Ensamblaje de Metagenomas
+
+---
+class: hide_logo
+
+.center[## Ensamblaje de Genoma de Novo]
+.center[##(Sin referencia)]
+
+.center[
+&lt;img src="imgs/genomeassembly.png" width=80%&gt;
+]
+
+* Como es posible re-armar el periódico a partir de los recortes?
+
+---
+
+# Tipos de lecturas (recortes)
+
+Existen diferentes tipos de lecturas/reads/secuencias, dependiendo de la tecnología y el protocolo usado. 
+
+.center[
+&lt;img src="imgs/reads.png" width=80%&gt;
+]
+
+Las secuencias *single-end* y *paired-end* son protocolos de Illumina y son consideradas secuencias cortas. 
+
+Los *long reads* o secuencias largas se pueden obtener con plataformas de secunciación de tercera generación como PacBio o Oxford Nanopore. Tienen un tamaño entre 10 mil y 15 mil pares de bases.
+
+---
+class: hide_logo
+
+### Qué significa "montar" un genoma
+
+A partir de los pedazos (recortes) armar el genoma (página del periódico). Pero si no tenemos un molde, cómo se sabe cual es el orden de las piezas? 
+
+.center[
+![](https://media.giphy.com/media/XbxxZbRzpcuSn1rbYk/giphy.gif)
+]
+
+---
+
+lass: hide_logo
+
+## Organización del montaje
+
+* Contigs:  Secuencias contiguas, formadas pela sobreposición de un cojunto de reads
+
+.center[
+&lt;img src="imgs/contigs.png" width=80%&gt;
+]
+
+* Scaffolds: Unión de contigs
+
+.center[
+&lt;img src="imgs/scafold.png" width=80%&gt;
+]
+
+---
+class: hide_logo
+
+## Algorítmos
+
+Existen diferentes algorítmos para ensamblar genomas, y deben ser usados según el tipo de secuencias (cortas o largas).
+
+* Overlap - Layout - Consensus
+  * PacBio
+  
+.center[
+&lt;img src="imgs/olc.png" width=70%&gt;
+]
+
+---
+## Algorítmos
+* Grafo de De Bruijn
+  * Illumina
+
+.center[
+&lt;img src="imgs/debruijn.png" width=80%&gt;
+]
+
+---
+class: hide_logo
+
+# Ensamblaje de Metagenomas
+
+&lt;img src="imgs/metagenoma.png" align='center' width=100%&gt;
+
+Usa la información de cobertura (número de veces que un mismo fragmento fue secuenciado) para saber el orden aproximado de las piezas.
+
+---
+class: hide_logo
+
+# Abordajes para trabajar con metagenomas
+
+&lt;img src="imgs/approaches.png" align='center' width=100%&gt;
+
+---
+.center[## Programas para ensamblar]
+.center[##Metagenomas]
+
+* Megahit (secuencias cortas)
+* MetaSpades (secuencias cortas e largas)
+* Velvet, SOAP, IDBA, etc.
+---
+.center[## Como evaluar la calidad]
+.center[## de los metagenomas ensamblados?]
+
+1. Número de contigs 
+2. Tamaño de los contigs
+3. Tamaño del mayor contig
+4. N50
+5. Tamaño total del montaje
+
+&lt;font size=3&gt; Programa para evaluar el montaje. Evaluar solo vale la pena si hay dos o más montajes para comparar &lt;/font&gt;
+
+---
+## N50
+
+50% del total de bp que están en el 50% de los contigs.
+
+**Ejemplo**
+
+Un genoma de 300 Mbp fue montado en 8 contigs. Los tamaños de los contigs son: 15 Mbp, 39 Mbp, 24 Mbp, 3 Mbp, 33 Mbp, 45 Mbp, 117 Mbp y 54 Mbp.
+
+1. Ordene de mayor a menor los tamaños de los contigs
+&gt; 117, 54, 45, 39, 33, 24, 15, 3, 3
+
+2. Cálcule la mitad del genoma
+&gt; 150 Mbp
+
+3. Sume los contigs hasta pasar de 150 Mbp, el tamaño de ese contig es el N50
+&gt; 54 Mbp
+
+---
+class: center, middle, inverse
+
+# Tiempo para colocar en práctica!
+.center[
+![](https://media.giphy.com/media/Wsju5zAb5kcOfxJV9i/giphy.gif)
+]
+---
+class: center, middle, inverse
+
+# Práctica III Montaje de Metagenomas
+
+---
+## Práctica III
+
+* &lt;font size=2&gt;Cobertura de los metagenomas:&lt;/font&gt; **NonPareil**
+* &lt;font size=2&gt;Análisis de distancias MinHash:&lt;/font&gt; **Mash**
+* &lt;font size=2&gt;Montaje de metagenomas: &lt;/font&gt;**Spades**, **Megahit**
+* &lt;font size=2&gt;Calidad de los montajes:&lt;/font&gt; **Quast**
+
+&lt;img src="imgs/workflow.png" align='center' width=100%&gt;
+
+---
+class: center, middle, inverse
+
+
 # Continuará...
+
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
