@@ -397,7 +397,7 @@ sequências limpas usando novamente FastQC.
 > Después de correr Trimmomatic es necesario evaluar la calidad de las
 > secuencias generadas (“limpias”) usando nuevamente FastQC.
 
-    fastqc -t 10 02.CleandData/* -o 01.FastqcReports/
+    fastqc -t 10 02.CleanData/* -o 01.FastqcReports/
 
 Descargue los reportes `.html` de las secuencias pareadas
 (i.e. `01.FastqcReports/sample1_1_paired_fastqc.html` y
