@@ -515,7 +515,9 @@ de saturação. A continuação se encontra o script. Além dos arquivos
 `.npo` é necessário criar um arquivo chamado `samples.txt`, o qual deve
 ter três colunas (separadas por tabulações), a primeira terá o nome de
 cada arquivo `.npo`, a segunda o nome da amostra, e a terceira a cor em
-formato JSON que vai ser usada para a curva. Veja o exemplo abaixo
+formato JSON que vai ser usada para a curva. A continuação se encontram
+uma série de comandos no bash para gerar o arquivo, no entanto este
+arquivo pode ser construido em um bloco de notas, ou incluso no excel.
 
 > 🇪🇸 Al terminar este proceso, el programa habrá creado varios
 > [*outputs*](https://nonpareil.readthedocs.io/en/latest/redundancy.html#output)
@@ -531,28 +533,68 @@ formato JSON que vai ser usada para a curva. Veja o exemplo abaixo
 > `samples.txt`, el cual debe tener tres columnas (separadas por
 > tabulaciones), la primera tendrá el nombre de cada archivo `.npo`, la
 > segunda el nombre de la muestra, y la tercera el color en formato JSON
-> que va a ser usado para la curva. vea el ejemplo abajo
+> que va a ser usado para la curva. A continuación se encontran una
+> serie de comandos en bash para generar el archivo, sin embargo, este
+> archivo puede ser construido en un bloc de notas, o incluso en excel.
 
-    # Cria o arquivo samples.txt
-    nano samples.txt
+    # Cria um arquivo com os nomes dos arquivos
+    ls *.npo > files.txt
 
-Arquivo `samples.txt`
+    # Cria um arquivo com os nomes das amostras
+
+    ls *.npo | sed 's/_1_paired.fq.npo//g' > prefix.txt
+
+Agora precisa criar uma lista de cores para diferenciar suas amostras no
+gráfico. Use o site [IWantHue](http://medialab.github.io/iwanthue/) para
+criar uma paleta com o número de cores igual ao númerop de amostras.
+Copie os códigos **HEX json** das cores e coloque dentro de um arquivo
+(elimine as vírgulas):
+
+> 🇪🇸 Ahora necesita crear una lista de colores para diferencias sus
+> muestras en el gráfico. Use el sitio de internet
+> [IWantHue](http://medialab.github.io/iwanthue/) para crear una paleta
+> con el número de colores igual al número de muestras. Copie los
+> códigos **HEX json** de los colores e coloque dentro de un archivo
+> (elimine las comas):
+
+    # Crie o arquivo
+    nano colors.txt
+
+    # Copie e cole os códigos
+    "#c151b6"
+    "#5eb04d"
+    "#7d65ce"
+    "#b5b246"
+    "#688ccd"
+    "#4bb092"
+
+Cree o arquivo final com os títulos de las columnas e una los três
+arquivos gerados anteriormente:
+
+    echo -e 'File\tName\tCol' > samples.txt
+
+    # Unindo os arquivos dentro de samples.txt
+    paste -d'\t' files.txt prefix.txt colors.txt >> samples.txt
+
+Use `less` para explorar o arquivo, ele deve se ver assim:
 
     File    Name    Col
-    sample1.fq.npo    sample1   "#c151b6"
-    sample2.fq.npo    sample2   "#5eb04d"
-    sample3.fq.npo    sample3   "#7d65ce"
-    sample4.fq.npo    sample4   "#b5b246"
-    sample5.fq.npo    sample5   "#688ccd"
-    sample6.fq.npo    sample6   "#4bb092"
+    Sample1.npo   Sample1   "#c151b6"
+    Sample2.npo   Sample2   "#5eb04d"
+    Sample3.npo   Sample3   "#7d65ce"
+    Sample4.pno   Sample4   "#b5b246"
+    Sample5.npo   Sample5   "#688ccd"
+    Sample6.npo   Sample6   "#4bb092"
 
-Esse arquivo pode ser criado em um bloco de notas ou em excel, mas deve
-ser separado por tabulações.
+Descarregue os arquivos `.npo` e o arquivo `samples.txt`. Usando o
+seguinte script do R, grafique as curvas de saturação. \*Nota: todos os
+arquivos descarregados devem estar dentro de uma pasta só, p.e.
+`03.NonPareil`.
 
 ``` r
-install.packages("Nonpareil") #para instalar o pacote, só uma vez
+install.packages("Nonpareil") #para instalar o pacote
 library(Nonpareil) # ativa o pacote
-setwd("~/03.NonPareil") # determina seu diretório de trabalho (coloque o seu, onde colocou os arquivos .npo)
+setwd("~/03.NonPareil") # determina seu diretório de trabalho (coloque o seu, onde colocou os arquivos .npo e o arquivo samples.txt)
 
 samples <- read.table('samples.txt', sep='\t', header=TRUE, as.is=TRUE); #lê o arquivo samples.txt com a informação das amostras
 
@@ -562,7 +604,7 @@ nps <- Nonpareil.set(File, col=Col, labels=Name,
                                     ylim = c(0, 1.05),
                                     legend.opts = FALSE)) #grafica as curvas
 
-Nonpeil.legeng(nps, x.intersp=0.5, y.intersp=0.7, text.width=1.2) #coloca e personaliza a legenda
+Nonpeil.legeng(nps, x.intersp=0.5, y.intersp=0.7, pt.cex=0.5, cex=0.5) #coloca e personaliza a legenda
   
 detach(samples);
 summary(nps) #mostra o resumo em forma de tabela
