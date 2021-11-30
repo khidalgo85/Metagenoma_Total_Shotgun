@@ -4,9 +4,9 @@
     <title>Colaboración Científica GIBIM/UIS - GEMM/UNICAMP</title>
     <meta charset="utf-8" />
     <meta name="author" content="Kelly Hidalgo" />
-    <meta name="date" content="2021-11-18" />
+    <meta name="date" content="2021-11-30" />
     <script src="index_files/header-attrs-2.11/header-attrs.js"></script>
-    <script type="application/json" id="xaringanExtra-editable-docid">{"id":"cc2a5c3655354958b2a005d1b2065994","expires":1}</script>
+    <script type="application/json" id="xaringanExtra-editable-docid">{"id":"c1c37980040e42558f56d64ebbff0f7e","expires":1}</script>
     <script src="index_files/himalaya-1.1.0/himalaya.js"></script>
     <script src="index_files/js-cookie-3.0.0/js.cookie.js"></script>
     <link href="index_files/editable-0.2.6/editable.css" rel="stylesheet" />
@@ -36,7 +36,7 @@ class: center, middle, inverse, title-slide
 ## Entrenamiento en Metagenómica
 ### Kelly Hidalgo
 ### Grupo de Ecologia Microbiana e Multi-ômicas
-### 2021-11-18
+### 2021-11-30
 
 ---
 
@@ -316,7 +316,7 @@ class: center, middle, inverse
 * *Trimming*
 
 
-[Click aqui](https://github.com/khidalgo85/Metagenoma_Total_Shotgun)
+[Tutorial](https://github.com/khidalgo85/Metagenoma_Total_Shotgun)
 
 ---
 class: center, middle, inverse
@@ -476,13 +476,77 @@ class: center, middle, inverse
 
 &lt;img src="imgs/workflow.png" align='center' width=100%&gt;
 
+[Tutorial](https://github.com/khidalgo85/Metagenoma_Total_Shotgun)
 ---
 class: center, middle, inverse
 
+# Teoría Parte IV: Predicción de genes
 
-# Continuará...
+---
+## Como son encontrados los genes?
+
+Programas son capazes de identificar diferentes regiones funcionales del genoma:
+
+* Regiones codificantes de proteínas (ORFs)
+* Regiones no codificantes (UTR, íntrons, tRNA, rRNA, microRNAs, long non-coding RNAs)
+* Regiones reguladoras (promoteres, enhancer, silencers)
+
+---
+## Estructura de los genes
+
+**Procariotos**
+
+.center[&lt;img src="imgs/gene.png" width=85%&gt;]
+
+Los ORFs son secuencias codificantes que poseen:
+- Codón de iniciación
+- Región codificante (CDS)
+- Codón de terminación
+
+---
+## Predicción de genes en procariotos
+
+**Para el ínicio**
+
+Los algorítmos están entrenados para reconocer señales en la región promotora de los genes
+
+  * Existen secuencias consenso en la región -35 y la *TATA Box* en la región -10 del promotor.
+
+  * Codón de inicio *start codon*
+
+**Para el final**
+
+Los programas pueden reconocer señales la región terminadora de los genes
+
+  * Codón de terminación *stop codon*
+---
+
+class: center, middle, inverse
+
+# Tiempo para colocar en práctica!
+.center[
+![](https://media.giphy.com/media/gfO1UMUVlM6i1BmKD2/giphy.gif)
+]
+
+---
+## Práctica IV
+
+**Contenido**
+
+* Predicción de genes: Prodigal
+* Anotación de Taxonómica: Kaiju, Kraken2
+* Anotación Funcional: Diamond (DBs EggNOG, KEGG)
+
+&lt;img src="imgs/workflow2.png" align='center' width=85%&gt;
+
+[Tutorial](https://github.com/khidalgo85/Metagenoma_Total_Shotgun)
 
 
+---
+
+class: center, middle, inverse
+
+# Continuará
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

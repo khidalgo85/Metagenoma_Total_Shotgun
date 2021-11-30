@@ -156,7 +156,7 @@ conda activate QualityControl
 pwd
 ```
 
-🇧🇷 Deve etsar em `~/metagenomica/`.. Se esse não é o resultado del comando `pwd`, use o comando `cd` para chegar no diretório desejado.
+🇧🇷 Deve estar em `~/metagenomica/`.. Se esse não é o resultado del comando `pwd`, use o comando `cd` para chegar no diretório desejado.
 
 > 🇪🇸 Debe estar em `~/metagenomica/`. Si ese no es el resultado del comando `pwd`, use el comando `cd` para llegar en el directorio base.
 
@@ -183,11 +183,11 @@ fastqc -t 10 00.RawData/* -o 01.FastqcReports/
 
 * Zip files `.zip`: Aqui se encontram cada um dos gráficos de maneira separada. **IGNORE**
 
-Descaregue os arquivos `html` e explore no seu *web browser*. 
+Descarregue os arquivos `html` e explore no seu *web browser*. 
 
-Observe as estatísticas básicas que se encontram na primeira tabela. Alí, você pode saber quantas sequências tem, o tamanho e o %GC. O gráfico mais importante para saber a quealidade das leituras, é o primeiro, *Per base sequence quality*. Este gráfico é um boxplot com a distribuição dos valores de qualidade *Phred Score* (eje y) em cada um dos nucleotídeos das leituras (eje x). Se consideram sequências de excelente qualidade quando o $Phred Score > 30$. É norla que o pair 2 apresente uma qualidade um pouco inferior ao pair 1.
+Observe as estatísticas básicas que se encontram na primeira tabela. Alí, você pode saber quantas sequências tem, o tamanho e o %GC. O gráfico mais importante para saber a quealidade das leituras, é o primeiro, *Per base sequence quality*. Este gráfico é um boxplot com a distribuição dos valores de qualidade *Phred Score* (eje y) em cada um dos nucleotídeos das leituras (eje x). Se consideram sequências de excelente qualidade quando o *Phred Score > 30*. É norla que o pair 2 apresente uma qualidade um pouco inferior ao pair 1.
 
-> 🇪🇸 Observe las estadísticas básicas que se encuentran en la primera tabla. Allí, ud puede saber cuantas secuencias tiene, el tamaño y el %GC. El gráfico más importante para saber la calidad de las lecturas es el primero, *Per base sequence quality*. Este gráfico es un boxblot con la distribución de los valores de calidad *Phred Score* (eje y) en cada uno de los nucleótidos de las lecturas (eje x). Se consideran secuencias de excelente calidad cuando el $Phred Score > 30$. Es normal que el pair 2 presente una calidad un poco inferior al pair 1. 
+> 🇪🇸 Observe las estadísticas básicas que se encuentran en la primera tabla. Allí, ud puede saber cuantas secuencias tiene, el tamaño y el %GC. El gráfico más importante para saber la calidad de las lecturas es el primero, *Per base sequence quality*. Este gráfico es un boxblot con la distribución de los valores de calidad *Phred Score* (eje y) en cada uno de los nucleótidos de las lecturas (eje x). Se consideran secuencias de excelente calidad cuando el *Phred Score > 30*. Es normal que el pair 2 presente una calidad un poco inferior al pair 1. 
 
 
 ### 1.2. Trimagem
@@ -647,5 +647,204 @@ cat unpaired/sample4_1_unpaired.fq.gz unpaired/sample4_2_unpaired.fq.gz unpaired
 ```
 metaspades.py -o 05.Assembly/sample45/ -1 02.CleanData/sample45_1_paired.fq.gz -2 02.CleanData/sample45_2_paired.fq.gz -s unpaired/sample45_12_unpaired.fq.gz -t 6 -m 100 -k 21,29,39,59,79,99,119
 ```
+
+## 3. Controle de Qualidade das montagens
+
+🇧🇷 Para avaliar a quealidade das montagens será usada a ferramenta [**Quast v5.0.2**](http://quast.sourceforge.net/docs/manual.html) (*QUality ASsesment Tool*), especificamente o *script* `metaquast.py`, com o qual é possível determinar as principais estatísticas da montagem (i.e. N50, número de contigs, tamanho total da montagem, tamanho dos contigs, etc). **Metaquast** gera uma série de arquivos e reportes onde é possível observar essas estatísticas básicas da montagem. É uma ferramente muito útil para comparar montagens e escolher a melhor pro mesmo conjunto de dados. 
+
+> 🇪🇸 Para evaluar la calidad de los montajes será usada la herramienta [**Quast v5.0.2**](http://quast.sourceforge.net/docs/manual.html) (*QUality ASsesment Tool*), especificamente el *script* `metaquast.py`, con el cual es posible determinar las principales estadísticas del montaje (i.e. N50, número de contigs, tamaño total del montaje, tamaño de los contigs, etc). **Metaquast** genera una serie de archivos y reportes donde es posible observar esas estadísticas básicas del montaje. Es una herramienta muy útil para comparar monatajes y escoger el mejor del mismo conjunto de datos. 
+
+### 3.1. Instalação
+
+Crie um novo ambiente virtual, chamado bioinfo, onde se instalará **Quast**.
+
+```
+# Crie o ambiente
+conda create -n bioinfo
+
+# Ative o ambiente bioinfo
+conda activate bioinfo
+
+# Instale Quast
+conda install -c bioconda quast
+```
+
+### 3.2. Uso
+
+🇧🇷 Antes de rodar `metaquast.py`, é necessário trocar os nomes dos assemblies, já que eles tem todos o mesmo nome, `contigs.fasta` ou `scaffolds.fasta`. Use o comando `mv` para trocar os nomes. Siga o seguinte exemplo:
+
+> 🇪🇸 Antes de correr `metaquast.py` es necesario cambiar los nombres de los montajes, ya que todos tienen el mismo nombre, `contigs.fasta` ou `scaffolds.fasta`. Use el comando `mv` para cambiar los nombres. Siga el siguiente ejemplo:
+
+```
+mv 05.Assembly/sample1/scaffolds.fasta 05.Assembly/sample1/sample1.fasta
+
+mv 05.Assembly/sample45/scaffolds.fasta 05.Assembly/sample45/sample45.fasta
+```
+
+```
+# Crie um diretório pro output
+mkdir 06.AssemblyQuality
+
+# Rode Quast
+metaquast.py 05.Assembly/sample1/sample1.fasta 05.Assembly/sample45/sample45.fasta -o 06.AssemblyQuality/ --threads 6
+```
+
+**Sintaxis**
+`metaquast.py path/to/assembly/contigs.fasta -o path/to/output/`
+
+**Interpretação dos resultados**
+
+🇧🇷 A ideia de usar **Metaquast**, a parte de avaliar as estatísticas básicas das montagens, é comparar varias montagens para escolher a melhor. Por exemplo: entre menor seja o número de contigs é melhor, porque significa que a montagem está menos fragmentada. E isso será refletido no tamanho dos contigs que serão maiores. O valor de N50, é melhor entre maior seja. Além, também é ideal um menor número de gaps e Ns. No entanto, estas estatísticas funcionam melhor para genomas que para metagenomas, por se tratar de um conjunto de microrganismos.
+
+> 🇪🇸 La idea de usar **Metaquast**, aparte de evaluar las estidísticas básicas de los montajes, es comparar varios montajes para escoger el mejor. Por ejemplo: entre menor sea el número de contigs es mejor, porque significa que el montaje está menos fragementado. Y eso se reflejará en el tamaño de los contigs que serán más grandes. El valor de N50, es mejor entre mayor sea. Así mismo, es ideal menor número de gaps y Ns. Sin embargo, éstas estadísticas funcionan mejor para genomas que para metagenomas, por tratarse de un grupo de microorganismos. 
+
+**Outputs**
+
+Explore o diretório do output usando o comando `ls`.
+
+* `06.AssemblyQuality/report.html`: Este relatório pode ser aberto em um *web browser* e contem as informações mais relevantes. Como número de contigs, tamanho del maior contig, tamanho total da montagem, N50, etc.
+
+> 🇪🇸 `06.AssemblyQuality/report.html`: reporte puede ser abierto en un *web browser* y contiene las informaciones más relevantes. Como número de contigs, tamaño del mayor contig, tamaño total del montaje, N50, etc.
+
+<img src="imgs/report_quast1.png" align="center" width = "100%"/>
+
+
+* `06.AssemblyQuality/report.tex`, `06.AssemblyQuality/report.txt`, `06.AssemblyQuality/report.tsv`, `06.AssemblyQuality/report.pdf`: é o mesmo relatório porém em diferentes formatos. 
+
+* `06.AssemblyQuality/transposed_report.tsv`, `06.AssemblyQuality/transposed_report.tex`, `06.AssemblyQuality/transposed_report.tex`: Também é o relatório porém em formato tabular. 
+
+* `06.AssemblyQuality/icarus_viewers/contig_size_viewer.html`: Visualizador das contigs
+
+* `06.AssemblyQuality/basis_stats/`: Dentro desta pasta se encontram vários gráficos em formato `.pdf`. 
+
+## 4. Predição das ORFs (*Open Reading Frame*)
+
+🇧🇷 O objetivo desta etapa é procurar os marcos abertos de leitura ou ORFs (em inglês) dentro dos contig/scaffols. Ou seja, predizer onde iniciam e terminam os genes. Basicamente o programa procura por codons de inicio, principalmente **ATG**, porém, também são códons de iniciação **GTG** e **TTG**. Depois, procura os códons de parada, como **TAA**, **TAG** e **TGA**. 
+
+O programa a usar para a predição das ORFs em procariotos é [Prodigal v2.6.3 (*Prokaryotic Dynamic Programming Genefinding Algorithm*)](https://github.com/hyattpd/prodigal/wiki).
+
+> 🇪🇸 El objetivo de esta etapa es buscar los marcos abiertos de lectura o ORF (en inglés) dentro de los contigs/scaffolds. O sea, predecir donde incian y terminan los genes. Basicamente el programa busca por códones de inicio, principalmente **ATG**, sin embargo también son códones de inico **GTG** e **TTG**. Después, busca los códones de parada, como **TAA**, **TAG** y **TGA**.
+>
+> El programa a usar para la predicción de ORFs en procariotos es [Prodigal v2.6.3 (*Prokaryotic Dynamic Programming Genefinding Algorithm*)](https://github.com/hyattpd/prodigal/wiki).
+
+
+### 4.1. Instalação
+
+Crie um novo ambiente para instalação das ferramentas relacionadas com a anotação de genes, chamada `Annotation`. 
+
+```
+# Crie o ambiente
+conda create -n Annotation
+
+# Ative o ambiente
+conda activate Annotation
+
+# Instale Prodigal
+conda install -c bioconda prodigal
+```
+
+### 4.2. Uso
+
+Para facilitar o processo, passe todos os scaffolds de cada montagem para uma pasta só. Siga o exemplo:
+
+```
+mkdir 05.Assembly/scaffolds
+
+mv 05.Assembly/sample1/sample1.fasta 05.Assembly/scaffolds/
+
+mv 05.Assembly/sample45/sample45.fasta 05.Assembly/scaffolds
+
+# Confira
+ll 05.Assembly/scaffolds
+```
+
+Crie uma pasta chamada `07.GenePrediction` para colocar a saída do **Prodigal**.
+
+`mkdir 07.GenePrediction`
+
+A continuação encontrará o comando **individual** 
+
+```
+prodigal -i 05.Assembly/scafollds/sample1.fasta -f gff -o 07.GenePrediction/sample1.gff -a 07.GenePrediction/sample1.faa -d 07.GenePrediction/sample1.fa -p meta
+```
+Se tiver várias amostras, pode usar o seguinte loop para automatizar o processo com todas as amostras:
+
+```
+for i in 05.Assembly/scaffolds/*.fasta
+do
+BASE=$(basename $i .fasta)
+prodigal -i $i -f gff -o 07.GenePrediction/${BASE}.gff -a 07.GenePrediction/${BASE}.faa -d 07.GenePrediction/${BASE}.fa -p meta
+done
+```
+**Sintaxe**
+```
+prodigal -i assembly.fasta -f <gbk, gff, sqn, sco> -o coord -a proteins.faa -d nucleotides.fa
+```
+
+* `-i`: caminho para a montagem em formato `.fasta`, `.fa` ou `.fna`
+* `-f`: formato de saída pro arquivo de coordenadas, default `.gbk` (*Genbank-like format*), `.gff` (*Gene Feature Format*), `.sqn` (*Sequin feature table format*) ou `.sco` (*Simple coordinate input*)
+* `-o`: arquivo output com as coordenadas das ORFs
+* `-a`: sequências das ORFs em proteína
+* `-d`: sequências das ORFs em nucleotídeos
+
+
+**Formato `.gff` (Gene Feature Format)**
+
+🇧🇷 Este formato guarda as informações dos genes preditos pelo Prodigal. Explore-o (`less sample1.gff`).
+
+Cada sequência comença com um *header* com as infromações da sequência analizada, seguido de uma tabela separada por tabulações com informações dos genes encontrados em dita sequência.
+
+O *header* contém os seguentes campos:
+
+> 🇪🇸 Este formato guarda las informaciones de los genes predichos por Prodigal. Explorelo (`less sample1.gff`).
+> 
+> Cada secuencia comienza con un *header* con las informaciones de la secuencia analizada, seguido de una tabla separada por tabulaciones con informaciones de los genes encontrados en dicha secuencia.
+> 
+> El *header* contiene los siguientes campos:
+
+* **seqnum**: O número da sequência, começando pelo número 1.
+* **seqlen**: tamanho em bases da sequência
+* **seqhdr**: título completo da sequência extraído do arquivo `.fasta`.
+* **version**: versão do Prodigal usado
+* **run_type**: modo de corrida, p.e. m*metagenomic*
+* **model**: informação sob o arquivo de treinamento usado para a predição.
+* **gc_cont**: % de GC na sequência
+* **transl_table**: Tabela do código genético usada para analizar a sequência. Para bactérias e archaeas é usada a [tabela 11](https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG11).
+* **uses_sd**: 1 se o Prodigal usa o *[RBS](https://parts.igem.org/Ribosome_Binding_Sites) finder*, ou 0 se usa outros *motifs*. 
+
+Después do *header* se encuentra una tabla con las informaciones de los genes encontrados:
+
+* **seqname**: nome da sequência, neste caso nome do scaffold/contig.
+* **source**: nome do programa que gerou a predição
+* **feature**: tipo de *feature*, p.e. CDS (*Coding DNA Sequence*)
+* **start**: primeira posição da *feature*
+* **end**: útlima posição da *feature*
+* **score**: Valor numerico que geralmente indica a confiança do programa na predição da ORF.
+* **strand**: fita do DNA que foi encontrado a *feature*. A fita *forward* é definida como '+', e a *reverse* como '-'.
+* **frame**: 0 indica que a primeira base da *feature* é a primeira base do códon de inicio, 1, que a segunda base da *feature* é a primeira base do códon de inicio.
+* **atribute**: información adicional sobre la *feature*, parada por ponto e vìrgula ";".  
+
+  * **ID**: identificador único de cada gene, consistindo em um número ordinal ID da sequência e um número ordinal ID do número do gene separados por "_". Por exemplo "1_688" siginifa que é o gene número 688 da sequência 1.
+  * **partial**: indica se o gene está completo ou não. "0" indica que no gene foi encontrado o códon de inicio ou de parada, "01" indica que no gene só foi encontrado o cóndon de inicio, "11" indica que não foram encontrados nenhum dos dois códons e "00" indica que foram encontrados ambos códons.
+  * **start_type**: sequência do códon de inicio.
+  * **stop_type**: sequências do códon de parada
+  * **rbs_motif**: *RBS motif* encontrado pelo Prodigal
+  * **rbs_spacer**: número de bases entre o códon de inicio e o *motif* observado.
+  * **gc_cont**: Conetúdo de GC no gene
+  * **conf**: nota de confiança pra o gene, representa a probabilidade que esse gene seja real. 
+  * **score**: *score* total pro gene
+  * **cscore**: fração hexamero do *score*, o quanto este gene se parece com uma proteína verdadeira.
+  * **sscore**: *score* para o sitio de inicio da tradução do gene. é a soma dos três seguintes *scores*.
+  * **rscore**: *score* pro *RBS motif*
+  * **uscores**: *score* pra sequência em torno do códon de início.
+  * **tscore**: *score* para o tipo de códon de inicio
+  * **mscore**: *score* pros sinais restantes (tipo de códon de parada e informações da fita principal / reversa).
+  
+  
+
+
+
+
+
 
 

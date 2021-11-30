@@ -304,7 +304,7 @@ class: center, middle, inverse
 * *Trimming*
 
 
-[Click aqui](https://github.com/khidalgo85/Metagenoma_Total_Shotgun)
+[Tutorial](https://github.com/khidalgo85/Metagenoma_Total_Shotgun)
 
 ---
 class: center, middle, inverse
@@ -464,10 +464,74 @@ class: center, middle, inverse
 
 <img src="imgs/workflow.png" align='center' width=100%>
 
+[Tutorial](https://github.com/khidalgo85/Metagenoma_Total_Shotgun)
 ---
 class: center, middle, inverse
 
+# Teoría Parte IV: Predicción de genes
 
-# Continuará...
+---
+## Como son encontrados los genes?
+
+Programas son capazes de identificar diferentes regiones funcionales del genoma:
+
+* Regiones codificantes de proteínas (ORFs)
+* Regiones no codificantes (UTR, íntrons, tRNA, rRNA, microRNAs, long non-coding RNAs)
+* Regiones reguladoras (promoteres, enhancer, silencers)
+
+---
+## Estructura de los genes
+
+**Procariotos**
+
+.center[<img src="imgs/gene.png" width=85%>]
+
+Los ORFs son secuencias codificantes que poseen:
+- Codón de iniciación
+- Región codificante (CDS)
+- Codón de terminación
+
+---
+## Predicción de genes en procariotos
+
+**Para el ínicio**
+
+Los algorítmos están entrenados para reconocer señales en la región promotora de los genes
+
+  * Existen secuencias consenso en la región -35 y la *TATA Box* en la región -10 del promotor.
+
+  * Codón de inicio *start codon*
+
+**Para el final**
+
+Los programas pueden reconocer señales la región terminadora de los genes
+
+  * Codón de terminación *stop codon*
+---
+
+class: center, middle, inverse
+
+# Tiempo para colocar en práctica!
+.center[
+![](https://media.giphy.com/media/gfO1UMUVlM6i1BmKD2/giphy.gif)
+]
+
+---
+## Práctica IV
+
+**Contenido**
+
+* Predicción de genes: Prodigal
+* Anotación de Taxonómica: Kaiju, Kraken2
+* Anotación Funcional: Diamond (DBs EggNOG, KEGG)
+
+<img src="imgs/workflow2.png" align='center' width=85%>
+
+[Tutorial](https://github.com/khidalgo85/Metagenoma_Total_Shotgun)
 
 
+---
+
+class: center, middle, inverse
+
+# Continuará
