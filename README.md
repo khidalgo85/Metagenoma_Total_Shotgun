@@ -917,9 +917,27 @@ montadas e todos os pair2 das mesmas.
 
     metaspades.py -o 05.Assembly/sample45/ -1 02.CleanData/sample45_1_paired.fq.gz -2 02.CleanData/sample45_2_paired.fq.gz -s unpaired/sample45_12_unpaired.fq.gz -t 6 -m 100 -k 21,29,39,59,79,99,119
 
+**Outputs**
+
+Para conhecer os demais parâmetros do comando que não foram modificados
+(usados por *default*), consulte o
+[manual](http://cab.spbu.ru/files/release3.15.2/manual.html).
+
+-   `corrected/`: contém as reads corregidas por **BayesHammer** em
+    `.fastq.gz`
+
+-   `scaffolds.fasta`: contém os scaffolds obtidos
+
+-   `contigs.fasta`: contém os contigis obtidos
+
+-   `assembly_graph_with_scaffolds.gfa`: contém o grafo da montagem en
+    formato GFA 1.0.
+
+-   `assembly_graph.fastg`: contém o grafo da montagem em formato FASTG
+
 ## 3. Controle de Qualidade das montagens
 
-🇧🇷 Para avaliar a quealidade das montagens será usada a ferramenta
+🇧🇷 Para avaliar a qualidade das montagens será usada a ferramenta
 [**Quast v5.0.2**](http://quast.sourceforge.net/docs/manual.html)
 (*QUality ASsesment Tool*), especificamente o *script* `metaquast.py`,
 com o qual é possível determinar as principais estatísticas da montagem
@@ -1089,7 +1107,7 @@ Crie uma pasta chamada `07.GenePrediction` para colocar a saída do
 
 A continuação encontrará o comando **individual**
 
-    prodigal -i 05.Assembly/scafollds/sample1.fasta -f gff -o 07.GenePrediction/sample1.gff -a 07.GenePrediction/sample1.faa -d 07.GenePrediction/sample1.fa -p meta
+    prodigal -i 05.Assembly/scaffolds/sample1.fasta -f gff -o 07.GenePrediction/sample1.gff -a 07.GenePrediction/sample1.faa -d 07.GenePrediction/sample1.fa -p meta
 
 Se tiver várias amostras, pode usar o seguinte loop para automatizar o
 processo com todas as amostras:
@@ -1202,3 +1220,265 @@ genes encontrados:
     -   **tscore**: *score* para o tipo de códon de inicio
     -   **mscore**: *score* pros sinais restantes (tipo de códon de
         parada e informações da fita principal / reversa).
+
+## 5. Anotação de genes
+
+🇧🇷 A anotação dos genes é feita alinhando as ORFs preditas contra bases
+de dados. No caso da anotação funcional, será usado o alinhador
+[**Diamond**](https://github.com/bbuchfink/diamond) e as bases de dados
+serão [**EggNOG**](http://eggnog5.embl.de/#/app/home) e
+[**KEGG**](https://www.kegg.jp/kegg/). No caso da anotação taxonômica,
+podem ser usados dois programas, o
+[**Kaiju**](https://github.com/bioinformatics-centre/kaiju) ou o
+[**Kraken2**](https://github.com/DerrickWood/kraken2/wiki).
+
+> 🇪🇸La anotación de los genes es realizada alineando las ORFs predichas
+> contra bases de dados. En el caso de la anotación funcional será usado
+> el programa para alineamiento
+> [**Diamond**](https://github.com/bbuchfink/diamond) y las bases de
+> datos [**EggNOG**](http://eggnog5.embl.de/#/app/home) y
+> [**KEGG**](https://www.kegg.jp/kegg/). Ya en el caso de la anotación
+> taxonómica, pueden ser usados dos programas,
+> [**Kaiju**](https://github.com/bioinformatics-centre/kaiju) o
+> [**Kraken2**](https://github.com/DerrickWood/kraken2/wiki).
+
+### 5.1. Instalação
+
+#### 5.1.1 Obtenção das Bases de Dados
+
+🇧🇷Para a obtenção das bases de dados, pode ir nos sites e descarregar
+diretamente. No entanto, tenha em conta que a base de dados **KEGG** é
+paga. Se você descarregar direto da fonte, deverá formatar as DBs para o
+seu uso com Diamond (anotação funcional). Isto é feito com o comando
+`makedb --in reference.fasta -d reference`.
+
+Para facilitar, no seguinte link, você encontrará as bases de dados
+**KEGG**, **EggNOG**, previamente formatadas para o uso em Diamond e
+**Kraken2**.
+
+Use o programa `gdown` para descarregar as dbs que se encontram em um
+GoogleDrive. Se não tiver esse `gdown` instalado, siga o seguintes
+passos:
+
+> 🇪🇸 Para la obtención de las bases de datos, puede ir directamente en
+> las páginas web de cada una. Sin embargo, tenga en cuenta que la base
+> de datos **KEGG** es paga. Si ud decide descargar directamente de la
+> fuente, deberá hacer una formatación de las DBs para el uso con
+> Diamond (anotación funcional). Este processo es realizado usando el
+> comando `makedb --in reference.fasta -d reference`.
+>
+> Para facilitar, en el siguiente link, encontrará las bases de
+> datos**KEGG**, **EggNOG**, previamente formatadas para su uso en
+> Diamond e **Kraken2**.
+
+-   [**Dbs**](https://drive.google.com/drive/folders/1GLP6vA4Gs0cce-nnBXCmZSgmONWybOSF?usp=sharing)
+
+<!-- -->
+
+    ## Se não tiver instalado pip
+    sudo apt update
+    sudo apt install python3-pip
+    pip3 --verision
+
+    ## Instale gdown
+    pip install gdown
+
+🇧🇷 Crie uma pasta, chamada `dbs/`, e use o programa `gdown` para
+descarregar as dbs.
+
+    # Crie o diretório
+    mkdir dbs/
+
+    # Descarregue as DBs
+    gdown https://drive.google.com/drive/folders/1GLP6vA4Gs0cce-nnBXCmZSgmONWybOSF?usp=sharing
+
+Serão descarregados os seguintes arquivos:
+
+-   `eggnog.dmnd`: Base de dados EggNOG formatada para Diammond
+-   `kegg.dmnd`: Base de dados KEGG formatada para Diammond
+-   `minikraken_8GB_202003.tgz`: Base de dados comprimida para Kraken
+
+🇧🇷 **Nota** É recomendável procurar os links originais para descarga das
+bases de dados para assim obter a versão mais atualizada (p.e.
+[Kraken2](https://ccb.jhu.edu/software/kraken2/index.shtml?t=downloads))
+
+Para usar kaiju, pode ser descarregada facilmente usando o comando
+`wget` e algun dos seguintes links:
+
+> 🇪🇸 **Nota** es recomendable buscar los links originales para descargar
+> las bases de datos en sus versiones más actualizadas (p.e.
+> [Kraken2](https://ccb.jhu.edu/software/kraken2/index.shtml?t=downloads))
+>
+> Para usar kaiju, puede ser descargada facilmente usando el comando
+> `wget` e alguno de los seguientes links:
+
+-   [**Kaiju\_nr\_2021-02-24
+    (52GB)**](https://kaiju.binf.ku.dk/database/kaiju_db_nr_2021-02-24.tgz) -
+    NCBI BLAST nr database. Contém todas as proteinas que pertencem a
+    Archaea, Bacteria e Virus.
+
+-   [**Kaiju\_progenomes\_2021-03-02 (19
+    GB)**](https://kaiju.binf.ku.dk/database/kaiju_db_progenomes_2021-03-02.tgz) -
+    Genomas representativos da base de dados
+    [proGenomes](http://progenomes.embl.de/) **opção para máquinas com
+    menor capacidade**
+
+🇧🇷 As bases de dados de **Kraken2** e **Kaiju** devem ser descompressas
+usando o comando:
+
+    ## Kraken2
+    tar -xzvf minikraken_8GB_202003.tgz
+
+    ## Troque o nome da pasta de saída
+    mv minikraken_8GB_20200312/ kraken2
+
+    ## Elimine o arquivo original
+    rm minikraken_8GB_202003.tgz
+
+    ## Coloque tudo dentro de uma pasta chamada mainDB
+    cd kraken2
+    mkdir mainDB
+    mv * mainDB/
+
+    ## Kaiju
+    tar -xzvf kaiju_db_nr_2021-02-24.tgz
+
+#### 5.1.2 Instalação Diammond
+
+O [**Diamond**](https://github.com/bbuchfink/diamond) será usado para a
+anotação funcional. Instale através do conda, no ambiente `Annotation`
+
+    # Active o ambiente
+    conda activate Annotation
+
+    # Instalaçao
+    conda install -c bioconda diammond=2.0.9
+
+#### 5.1.3. Instalação Kraken2
+
+[**Kraken2**](https://github.com/DerrickWood/kraken2/wiki) será usado
+para a anotação taxonômica. Instale o programa no ambiente `Annotation`.
+
+    # Se não estiver ativado
+    conda activate Annotation
+
+    # Instale 
+    conda install -c bioconda kraken2
+
+Após instalado, deve configurar a base de dados, isto é indicar pro
+programa o caminho (*PATH*) onde se encontram a base de dados. Dígite o
+seguinte comando: (*coloque o caminho que corresponda a onde você
+descarregou suas bases de dados*)
+
+> 🇪🇸 Después de instalado, debe ser configurada la base de datos, esto
+> es, indicar para el programa el camino (*PATH*) donde se encuentra la
+> base de datos. Dígite el siguiente comando: (\*coloque el camino que
+> corresponda a donde ud descargó sus bases de datos)
+
+    export KRAKEN2_DB_PATH="home/user/Documents/dbs/kraken2/"
+
+#### 5.1.3. Instalação Kaiju
+
+[**Kaiju**](https://github.com/bioinformatics-centre/kaiju) é outra
+opção que pode ser usada para anotação taxonômica. Instale a ferramenta
+dentro do ambiente `Annotation`.
+
+    ## Se não estiver ativado
+    conda activate Annotation
+
+    ## Instale
+    conda install -c bioconda kaiju
+
+### 5.2. Anotação Funcional
+
+🇧🇷 Uma vez instaladas todas as ferramentas e descarregadas as bases de
+dados, pode proceder à anotação. Neste caso será feita primeiro à
+funcional, usando Diammond e as bases de dados **KEGG** e **EggNOG**. A
+continuação se encontra o comando ndividual (*uma montagem e uma base de
+dados por vez*)
+
+> 🇪🇸 Una vez instaladas todas las herramientas y descargadas las bases
+> de datos, puede proceder a la anotación. En este caso será hecha
+> primero la anotación funcional, usando Diammond e las bases de datos
+> **KEGG** e **EggNOG**
+
+    ## Crie uma pasta pra saída
+    mkdir 08.FunctionalAnnotation
+
+    ## Diammond
+    diamond blastx --more-sensitive --threads 6 -k 1 -f 6 qseqid qlen sseqid sallseqid slen qstart qend sstart send evalue bitscore score length pident qcovhsp --id 60 --query-cover 60 -d dbs/kegg.dmnd --query 07.GenePrediction/sample1.fa -o 08.FunctionalAnnotation/sample1_kegg.txt --tmpdir /dev/shm
+
+**SINTAXE**
+
+    diamond blastx --more-sensitive --threads -k -f --id --query-cover -d dbs/db.dmnd --query orfs_nucleotides.fa -o annotation.txt --tmpdir /dev/shm
+
+-   `blastx`: Alinha sequências de DNA contra uma base de dados de
+    proteínas
+-   `--more-sensitive`: este modo permite hits com &gt;40% de
+    identidade. Existem outros modos
+    `--fast --min-sensitive --very-sensitive --ultra-sensitive`. Clique
+    [aqui](https://github.com/bbuchfink/diamond/wiki/3.-Command-line-options)
+    para mais detalhes
+-   `--threads`: número de núcleos
+-   `-k/--max-target-seqs`: Número máximo de sequências *target* por
+    *query* para reportar alinheamentos.
+-   `-f/--outfmt`: Formato de saída. São aceptos os seguintes valores:
+    -   `0` Formato BLAST *pairwise*
+    -   `5` fomato BLAST XML
+    -   `6` Formato do BLAST tabular (default), pode customizar as
+        colunas com uma lista separada por espaços, das seguintes
+        opções:
+        -   `qseqid` id da sequência *query*
+        -   `qlen` tamanho da sequência *query*
+        -   `sseqid` id da sequência da base de dados
+        -   `sallseqid` todas os id das sequências das bases de dados
+        -   `slen` tamanho da sequência da base de dados
+        -   `qstart` inicio do alinhamento no *query*
+        -   `qend` fim do alinhamento no *query*
+        -   `sstart` inicio do alinhamento na sequência da base de dados
+        -   `send` fim do alinhamento na sequência da base de dados
+        -   `evalue`
+        -   `bitscore`
+        -   `score`
+        -   `length` tamanho do alinhamento
+        -   `pident` porcentagem de matches identicos
+
+Com o comando anterior foi feita a anotação da montagem da amostra
+`sample1` com a base de dados `kegg.dmnd` e os dados foram guardados no
+arquivo `kegg_annotation.txt`.
+
+> 🇪🇸 Con el comando anterior fue realizada la anotación de la muestra
+> `sample1` con la base de datos `kegg.dmnd` y los datos fueron
+> guardadas en el archivo `kegg_annotation.txt`.
+
+Se você quiser rodar todas suas montagens e as duas bases de dados ao
+mesmo tempo, pode usar o seguinte loop `for`:
+
+    for i in 07.GenePrediction/*.fa
+    do
+    BASE=$(basename $i .fa)
+      for j in dbs/*dmnd
+      do
+      db=$(basename $j .dmnd)
+    diamond blastx --more-sensitive --threads 6 -k 1 -f 6 qseqid qlen sseqid sallseqid slen qstart qend sstart send evalue bitscore score length pident qcovhsp --id 60 --query-cover 60 -d $j --query $i -o 08.FunctionalAnnotation/${BASE}_${db}.txt --tmpdir /dev/shm
+
+Com o comando anterior, é feita a anotação em todas as ORFs preditas na
+pasta `07.GenePrediction/` com todas as bases de dados para diammond
+dentro da pasta `dbs/`. Veja que no loop foram declaradas duas
+variavéis, `i` que corresponde a cada um dos arquivos das ORFs
+(nucleotídeos) preditas com Prodigal e a variável `j` que corresponde a
+cada um dos arquivos terminados em `.dmnd` dentro da pasta `dbs/`, ou
+seja as bases de dados `kegg.dmnd` e `eggnog.dmnd`.
+
+> 🇪🇸 Con el comado anterior, es realizada la anotación de todas las ORF
+> predichas en el directorio `07.GenePrediction/` con todas las bases de
+> datos para Diammond dentro de la carpeta `dbs/`. Vea que en el loop
+> fueron declaradas dos variables, `i` que corresponde a cada uno de los
+> archivos de las ORFs (nucleótidos) predichos con Prodigal e la
+> variable `j` que corresponde a cada uno de los archivos terminados en
+> `.dmnd` dentro de la carpeta `dbs/`, o sea las bases de datos
+> `kegg.dmnd` y `eggnog.dmnd`.
+
+### 5.3 Anotação Taxonômica
+
+    kraken2 --db mainDB 07.GenePrediction/1d0SE.fa
