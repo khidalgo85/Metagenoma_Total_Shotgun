@@ -872,7 +872,7 @@ Después do *header* se encuentra una tabla con las informaciones de los genes e
 
 Para facilitar, no seguinte link, você encontrará as bases de dados **KEGG**, **EggNOG**, previamente formatadas para o uso em Diamond e **Kraken2**.   
 
-Use o programa `gdown` para descarregar as dbs que se encontram em um GoogleDrive. Se não tiver esse `gdown` instalado, siga o seguintes passos: 
+Use o programa `gdown` para descarregar as dbs que se encontram em um GoogleDrive. Se não tiver o `gdown` instalado, siga o seguintes passos: 
 
 > 🇪🇸 Para la obtención de las bases de datos, puede ir directamente en las páginas web de cada una. Sin embargo, tenga en cuenta que la base de datos **KEGG** es paga. Si ud decide descargar directamente de la fuente, deberá hacer una formatación de las DBs para el uso con Diamond (anotación funcional). Este processo es realizado usando el comando `makedb --in reference.fasta -d reference`. 
 >
@@ -906,39 +906,27 @@ Serão descarregados os seguintes arquivos:
 
 * `eggnog.dmnd`: Base de dados EggNOG formatada para Diammond
 * `kegg.dmnd`: Base de dados KEGG formatada para Diammond
-* `minikraken_8GB_202003.tgz`: Base de dados comprimida para Kraken
 
 🇧🇷 **Nota** É recomendável procurar os links originais para descarga das bases de dados para assim obter a versão mais atualizada (p.e. [Kraken2](https://ccb.jhu.edu/software/kraken2/index.shtml?t=downloads))
 
- Para usar kaiju, pode ser descarregada facilmente usando o comando `wget` e algun dos seguintes links:
-
 > 🇪🇸 **Nota** es recomendable buscar los links originales para descargar las bases de datos en sus versiones más actualizadas (p.e. [Kraken2](https://ccb.jhu.edu/software/kraken2/index.shtml?t=downloads))
->
->  Para usar kaiju, puede ser descargada facilmente usando el comando `wget` e alguno de los seguientes links:
 
-* [**Kaiju_nr_2021-02-24 (52GB)**](https://kaiju.binf.ku.dk/database/kaiju_db_nr_2021-02-24.tgz) - NCBI BLAST nr database. Contém todas as proteinas que pertencem a Archaea, Bacteria e Virus. 
-
-* [**Kaiju_progenomes_2021-03-02 (19 GB)**](https://kaiju.binf.ku.dk/database/kaiju_db_progenomes_2021-03-02.tgz) - Genomas representativos da base de dados [proGenomes](http://progenomes.embl.de/) **opção para máquinas com menor capacidade**
-
-🇧🇷 As bases de dados de **Kraken2** e **Kaiju** devem ser descompressas usando o comando:
 
 ```
 ## Kraken2
-tar -xzvf minikraken_8GB_202003.tgz
+mkdir Kraken2
+cd Kraken2
+
+## Descarregando desde o servidor dos desenvolvedores
+wget  ftp://ftp.ccb.jhu.edu/pub/data/kraken2_dbs/old/minikraken2_v1_8GB_201904.tgz
+
+tar zxvf minikraken2_v1_8GB_201904.tgz
 
 ## Troque o nome da pasta de saída
-mv minikraken_8GB_20200312/ kraken2
+mv minikraken2_v1_8GB/ mainDB
 
 ## Elimine o arquivo original
-rm minikraken_8GB_202003.tgz
-
-## Coloque tudo dentro de uma pasta chamada mainDB
-cd kraken2
-mkdir mainDB
-mv * mainDB/
-
-## Kaiju
-tar -xzvf kaiju_db_nr_2021-02-24.tgz
+rm minikraken2_v1_8GB_201904.tgz
 ```
 
 #### 5.1.2 Instalação Diammond
@@ -970,19 +958,7 @@ Após instalado, deve configurar a base de dados, isto é indicar pro programa o
 > 🇪🇸 Después de instalado, debe ser configurada la base de datos, esto es, indicar para el programa el camino (*PATH*) donde se encuentra la base de datos. Dígite el siguiente comando: (*coloque el camino que corresponda a donde ud descargó sus bases de datos)
 
 ```
-export KRAKEN2_DB_PATH="home/user/Documents/dbs/kraken2/"
-```
-
-#### 5.1.3. Instalação Kaiju
-
-[**Kaiju**](https://github.com/bioinformatics-centre/kaiju) é outra opção que pode ser usada para anotação taxonômica. Instale a ferramenta dentro do ambiente `Annotation`.
-
-```
-## Se não estiver ativado
-conda activate Annotation
-
-## Instale
-conda install -c bioconda kaiju
+export KRAKEN2_DB_PATH="/home/metagenomica/dbs/Kraken2/"
 ```
 
 ### 5.2. Anotação Funcional
@@ -1046,16 +1022,97 @@ BASE=$(basename $i .fa)
 diamond blastx --more-sensitive --threads 6 -k 1 -f 6 qseqid qlen sseqid sallseqid slen qstart qend sstart send evalue bitscore score length pident qcovhsp --id 60 --query-cover 60 -d $j --query $i -o 08.FunctionalAnnotation/${BASE}_${db}.txt --tmpdir /dev/shm
 ```
 
-Com o comando anterior, é feita a anotação em todas as ORFs preditas na pasta `07.GenePrediction/` com todas as bases de dados para diammond dentro da pasta `dbs/`. Veja que no loop foram declaradas duas variavéis, `i` que corresponde a cada um dos arquivos das ORFs (nucleotídeos) preditas com Prodigal e a variável `j` que corresponde a cada um dos arquivos terminados em `.dmnd` dentro da pasta `dbs/`, ou seja as bases de dados `kegg.dmnd` e `eggnog.dmnd`. 
+Com o comando anterior, é feita a anotação em todas as ORFs preditas na pasta `07.GenePrediction/` com todas as bases de dados para diammond dentro da pasta `dbs/`. Veja que no loop foram declaradas duas variavéis, `i` que corresponde a cada um dos arquivos das ORFs (nucleotídeos) preditas com Prodigal e a variável `j` que corresponde a cada um dos arquivos terminados em `.dmnd` dentro da pasta `dbs/`, ou seja as bases de dados `kegg.dmnd` e `eggnog.dmnd`. Os arquivos de saída são duas tabelas por cada montagem, uma da anotação com *eggnog* e outra com *kegg*. 
 
-> 🇪🇸 Con el comado anterior, es realizada la anotación de todas las ORF predichas en el directorio `07.GenePrediction/` con todas las bases de datos para Diammond dentro de la carpeta `dbs/`. Vea que en el loop fueron declaradas dos variables, `i` que corresponde a cada uno de los archivos de las ORFs (nucleótidos) predichos con Prodigal e la variable `j` que corresponde a cada uno de los archivos terminados en `.dmnd` dentro de la carpeta `dbs/`, o sea las bases de datos `kegg.dmnd` y `eggnog.dmnd`. 
+> 🇪🇸 Con el comado anterior, es realizada la anotación de todas las ORF predichas en el directorio `07.GenePrediction/` con todas las bases de datos para Diammond dentro de la carpeta `dbs/`. Vea que en el loop fueron declaradas dos variables, `i` que corresponde a cada uno de los archivos de las ORFs (nucleótidos) predichos con Prodigal e la variable `j` que corresponde a cada uno de los archivos terminados en `.dmnd` dentro de la carpeta `dbs/`, o sea las bases de datos `kegg.dmnd` y `eggnog.dmnd`. Los archivos de salida son dos tablas por cada ensamble, una con la anotación con *eggnog* e otra con *kegg*. 
 
 
 ### 5.3 Anotação Taxonômica
 
+Para a anotação taxonômica será usada a ferramenta Kraken2. Depois de instalada a ferramenta, descarregada e configurada a base de dados, é possìvel rodar o comando para anotação. Lembrando que este procedimento deve ser feito para cada uma das predições de ORFs de cada montagem.
+
+> 🇪🇸 Para la anotación taxonómica será usado la herramienta Kraken2. Despues de instalada la herramienta, descargada y configurada la base de dados, es posible correr el comando para anotación. Recordando que este procedimiento debe ser hecho apra cada una de las predicciones de ORFs de cada ensamble.
 
 ```
-kraken2 --db mainDB 07.GenePrediction/1d0SE.fa
+kraken2 --db mainDB 07.GenePrediction/sample1.fa 
 ```
+**SINTAXE**
+
+`kraken2 --db db orfs_nucleotides.fa`
+
+* `--db`: nome da pasta onde se encontra a base de dados e que foi configurada no PATH.
+* `orfs_nucleotides.fa`: Arquivo de saída da predição de ORFs, en formato `.fa` (nucleotídeos)
+
+Para rodar num comando só todas as montagens, pode ser usado o seguinte loop: 
+
+> 🇪🇸 Para correr en un solo comando todas los ensambles, puede ser usado el siguiente loop:
+
+```
+for i in 07.GenePrediction/*.fa
+do
+BASE=$(basename $i .fa)
+kraken2 --db mainDB $i
+done
+```
+
+O arquivo de saída é uma tabela `.tsv` por cada montagem. As colunas estão organizadas da seguinte forma:
+
+1. "C"/"U": Para indicar se a sequência foi classificada ou não classificada (*Unclassified*).
+2. Nome do contig
+3. Identificação Taxonômica
+4. Tamanho da sequência em bp.
+5. Mapeamento LCA de cada *k*-mer.
+
+
+## 6. Construção Tabela Final
+
+Finalmente é necessário construir uma tabela final com todas as anotações (taxonômica e funcional) de todas as montagens. 
+
+1. **Formatando as tabelas de anotação funcional**: Usando linha de comando, serão escolhidas as colunas mais importantes.
+
+```
+for i in 08.FunctionalAnnotation/*.txt
+do
+BASE=$(basename $i .txt)
+cut -f1,3,15 $i > 08.FunctionalAnnotation/${BASE}_formated.txt
+done
+```
+
+2. **Adicionando uma coluna com o nome da montagem**
+
+```
+cd 08.FunctionalAnnotation/
+
+for i in *; do nawk '{print FILENAME"\t"$0}' $i > $i.bk; mv $i.bk $i; done
+```
+
+3. **Formatando as tabelas da anotação taxonômica**
+
+```
+cd ../09.TaxonomicAnnotation/
+
+for i in *.tsv
+do
+BASE=$(basename $i .tsv)
+cut -f2,3 $i > ${BASE}_formated.tsv
+done
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
