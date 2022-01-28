@@ -1300,7 +1300,12 @@ descarregar as dbs.
     mkdir dbs/
 
     # Descarregue as DBs
-    gdown https://drive.google.com/drive/folders/1GLP6vA4Gs0cce-nnBXCmZSgmONWybOSF?usp=sharing
+
+    ## KEGG
+    gdown --id 1ZxjJdwh1izP32X5CH-B8SN0DK2WAAAvr
+
+    ##EggNOG
+    gdown --id 1x2Kp4PTX8GFFhkJm6EVDQLfi-xRSQ735
 
 Serão descarregados os seguintes arquivos:
 
