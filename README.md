@@ -95,20 +95,7 @@ observar que têm 4 amostras paired-end (R1 e R2)
 É fortemente recomendado rodar os comandos desde o diretório base, que
 neste caso é: `metagenomica/`
 
-<style>
-div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
-</style>
-
-<div class="blue">
-
-> **Nota importante: A maioria dos comandos que encontrará a
-> continuação, terão um parâmetro para definir o número de
-> núcleos/threads/cpus (`-t/--threads/`) que serão usados para o
-> processamento de cada comando. Coloque o número de núcleos baseado na
-> sua máquina o servidor que esteja usando para rodar as análises.
-> Procure não usar todos os núcleos disponíveis.**
-
-</div>
+> ## **Nota importante: A maioria dos comandos que encontrará a continuação, terão um parâmetro para definir o número de núcleos/threads/cpus (`-t/--threads/`) que serão usados para o processamento de cada comando. Coloque o número de núcleos baseado na sua máquina o servidor que esteja usando para rodar as análises. Procure não usar todos os núcleos disponíveis.**
 
 ## 1. Controle da Qualidade
 
