@@ -63,46 +63,52 @@ bioinformática que serão usadas.
 ### 0.1. Sequências
 
 🇧🇷 Em este tutorial serão usadas seis metagenomas exemplo para rodar
-todo o *pipeline*. Descarregue os [*datasets*]() usando o comando
-`wget`.
+todo o *pipeline*. Descarregue os datasets usando o comando `wget`.
 
 > 🇪🇸 En este tutorial serán usados seis metagenomas ejemplo para correr
-> todo el *pipeline*. Descargue los [*datasets*]() usando el comando
-> `wget`.
+> todo el *pipeline*. Descargue los datasets usando el comando `wget`.
 
-**Arquivos**
-
--   `sample1_1.fq.gz` e `sample1_2.fq.gz`: Amostra 1
--   `sample2_1.fq.gz` e `sample2_2.fq.gz`: Amostra 2
--   `sample3_1.fq.gz` e `sample3_2.fq.gz`: Amostra 3
--   `sample4_1.fq.gz` e `sample4_2.fq.gz`: Amostra 4
--   `sample5_1.fq.gz` e `sample5_2.fq.gz`: Amostra 5
--   `sample6_1.fq.gz` e `sample6_2.fq.gz`: Amostra 6
-
-A continuação encontrará uma série de comandos para organizar
-adequadamente os diretórios com as amostras.
-
-    ## Crie um diretório raiz para todo o processo
-    mkdir metagenomica
-
-    ## Entre al nuevo directorio
+    # Crie um diretório para este tutorail
+    mkdir metagenomica 
     cd metagenomica/
 
-    ## Crie um novo diretório para colocar os dados brutos
+Agora dentro de metagenomica crie outro diretório chamado `00.RawData`,
+onde vai descarregar o dataset de exemplo para este tutorial
+
     mkdir 00.RawData
 
-    ## Entre em 00.RawData
-    cd 00.RawData/
+Para descarregar o dataset…
 
-Use o comando `mv` para mover os arquivos até o diretório `00.RawData/`.
+    curl -L https://figshare.com/ndownloader/articles/19015058/versions/1 -o 00.RawData/dataset.zip
+    unzip 00.RawData/dataset.zip
+    rm 00.RawData/dataset.zip
 
-No final do processo de organização deve ver seus diretórios assim:
-`ls 00.RawData/`
+Com `ls`você pode ver o conteúdo descarregado.
 
-    sample1_1.fq.gz   sample1_2.fq.gz   sample2_1.fq.gz   sample2_2.fq.gz   sample3_1.fq.gz   sample3_2.fq.gz   sample4_1.fq.gz   sample4_2.fq.gz   sample5_1.fq.gz   sample5_2.fq.gz   sample6_1.fq.gz   sample6_2.fq.gz
+    ls 00.RawData
 
-É fortmente recomendado rodar os comandos desde o diretório base, que
+Por último “listou” (`ls`) o conteúdo da pasta `00.RawData`, vai
+observar que têm 4 amostras paired-end (R1 e R2)
+
+    Sample1_1.fq.gz Sample1_2.fq.gz Sample2_1.fq.gz Sample2_2.fq.gz Sample3_1.fq.gz Sample3_2.fq.gz Sample4_1.fq.gz Sample4_2.fq.gz Sample5_1.fq.gz Sample5_2.fq.gz Sample6_1.fq.gz Sample6_2.fq.gz
+
+É fortemente recomendado rodar os comandos desde o diretório base, que
 neste caso é: `metagenomica/`
+
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+
+<div class="blue">
+
+> **Nota importante: A maioria dos comandos que encontrará a
+> continuação, terão um parâmetro para definir o número de
+> núcleos/threads/cpus (`-t/--threads/`) que serão usados para o
+> processamento de cada comando. Coloque o número de núcleos baseado na
+> sua máquina o servidor que esteja usando para rodar as análises.
+> Procure não usar todos os núcleos disponíveis.**
+
+</div>
 
 ## 1. Controle da Qualidade
 
@@ -199,7 +205,7 @@ Ative o ambiente `QualityControl`:
     ## Onde vc está?
     pwd
 
-🇧🇷 Deve estar em `~/metagenomica/`.. Se esse não é o resultado del
+🇧🇷 Deve estar em `~/metagenomica/`. Se esse não é o resultado del
 comando `pwd`, use o comando `cd` para chegar no diretório desejado.
 
 > 🇪🇸 Debe estar em `~/metagenomica/`. Si ese no es el resultado del
@@ -253,6 +259,10 @@ dos nucleotídeos das leituras (eje x). Se consideram sequências de
 excelente qualidade quando o *Phred Score &gt; 30*. É norla que o pair 2
 apresente uma qualidade um pouco inferior ao pair 1.
 
+As amostras deste tutorial, apresentam qualidade um pouco baixa,
+principalmente no pair2. Por tanto, será necessário fazer a fase da
+trimagem.
+
 > 🇪🇸 Observe las estadísticas básicas que se encuentran en la primera
 > tabla. Allí, ud puede saber cuantas secuencias tiene, el tamaño y el
 > %GC. El gráfico más importante para saber la calidad de las lecturas
@@ -261,6 +271,10 @@ apresente uma qualidade um pouco inferior ao pair 1.
 > cada uno de los nucleótidos de las lecturas (eje x). Se consideran
 > secuencias de excelente calidad cuando el *Phred Score &gt; 30*. Es
 > normal que el pair 2 presente una calidad un poco inferior al pair 1.
+>
+> Las muestras de este tutorial, presentan calidad un poco baja,
+> principalmente en el pair2. Por lo tanto, será necesario hacer la fase
+> de depuración.
 
 ### 1.2. Trimagem
 
@@ -352,7 +366,7 @@ possível usar um *loop* `for` para executar esta tarefa.
     trimmomatic PE -threads 10 $i  00.RawData/${BASE}2.fastq.gz 02.CleanData/${BASE}1_paired.fq.gz unpaired/${BASE}1_unpaired.fq.gz 02.CleanData/${BASE}2_paired.fq.gz unpaired/${BASE}2_unpaired.fq.gz LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:100
     done
 
-**Sintaxe**
+**SINTAXE**
 `trimmomatic PE -threads input_forward input_reverse output_forward_paired output_forward_unpaired output_reverse_paired output_reverse_unpaired [opções]`
 
 🇧🇷 O comando anterior tem muitas partes. Primeiro, o nome do comando é
@@ -612,14 +626,18 @@ summary(nps) #mostra o resumo em forma de tabela
 Vai obter um gráfico com as curvas de saturação de cada amostra, como
 este:
 
-<img src="imgs/nonpareil.webp" align='center' width="80%">
+<img src="imgs/nonpareil.png" align='center' width="80%">
 
 🇧🇷 As linhas tracejadas <font color='red'> vermelha </font> e
 <font color='gray'> cinza </font> representam os *threshold* de 95% e
 99% da cobertura média, respeitivamente. O circulo em cada curva
 representa a cobertura atual das amostras, o ideal é que esteja por cima
 do primeiro *threshold*. As curvas também apresentam a estimação de
-quanto esforço de sequenciamento é necessário (zetas no eixo x).
+quanto esforço de sequenciamento é necessário (zetas no eixo x). Devido
+a que se trata de um dataset exemplo que foi obtido apartir de um
+subsample aleatorio de um conjunto de dados, a maioria das amostras não
+conseguem uma boa cobertura. As curvas reais para as amostras originais
+se apresentam a continuação:
 
 > 🇪🇸 Las líneas punteadas <font color='red'> roja </font> y
 > <font color='gray'> gris </font> representam los *threshold* de 95% y
@@ -627,7 +645,12 @@ quanto esforço de sequenciamento é necessário (zetas no eixo x).
 > representa la cobertura actual de las muestras, lo ideal es que estén
 > por encima del primer *threshold*. Las curvas también presentan la
 > estimación de cuanto esfuerzo de secuenciación es necesario (flechas
-> en el eje x).
+> en el eje x). Debido a que se trata de un dataset ejemplo que fue
+> obtenido a partir de un subsample aleatorio de un conjunto de datos,
+> la mayoria de las muestras no consiguen una buena cobertura. Las
+> curvas reales para las muestras originais se presentan a continuación:
+
+<img src="imgs/realnonpareil.png" align='center' width="80%">
 
 ### 1.4. Análise de Distâncias MinHash
 
@@ -784,7 +807,10 @@ Vai obter um heatmap com clusterização similar a este:
 <img src="imgs/distances.png" align='center' width="80%">
 
 Faça *co-assembly* para *datasets* com distâncias menores de 0.1, entre
-ellas.
+ellas. Como pode ser observado, se formaram dois grandes cluster as
+amostras 1 a 3 e amostras 4 a 6. No entanto, os dois clusters são
+proóximos entre eles. Por tanto podem ser montados todos em um
+co-assembly só.
 
 ## 2. Montagem dos Metagenomas
 
@@ -896,26 +922,26 @@ montadas e todos os pair2 das mesmas.
 
 <!-- -->
 
-    cat 02.CleanData/sample4_1.fq.gz 02.CleanData/sample5_1.fq.gz > 02.CleanData/sample45_1.fq.gz
+    cat 02.CleanData/Sample1_1.fq.gz 02.CleanData/Sample2_1.fq.gz 02.CleanData/Sample3_1.fq.gz 02.CleanData/Sample4_1.fq.gz 02.CleanData/Sample5_1.fq.gz 02.CleanData/Sample6_1.fq.gz > 02.CleanData/Sample_all_1.fq.gz
 
 2.  Concatene os pair 2
 
 <!-- -->
 
-    cat 02.CleanData/sample4_2.fq.gz 02.CleanData/sample5_2.fq.gz > 02.CleanData/sample45_2.fq.gz
+    cat 02.CleanData/Sample1_2.fq.gz 02.CleanData/Sample2_2.fq.gz 02.CleanData/Sample3_2.fq.gz 02.CleanData/Sample4_2.fq.gz 02.CleanData/Sample5_2.fq.gz 02.CleanData/Sample6_2.fq.gz > 02.CleanData/Sample_all_2.fq.gz
 
 3.  Se você quiser usar as *reads* no pareadas (saída do
     **Trimmomatic**), deve primeiro concatenarlas em um arquivo só
 
 <!-- -->
 
-    cat unpaired/sample4_1_unpaired.fq.gz unpaired/sample4_2_unpaired.fq.gz unpaired/sample5_1_unpaired.fq.gz unpaired/sample5_2_unpaired.fq.gz > unpaired/sample45_12_unpaired.fq.gz
+    cat unpaired/Sample1_1_unpaired.fq.gz unpaired/Sample1_2_unpaired.fq.gz unpaired/Sample2_1_unpaired.fq.gz unpaired/Sample2_2_unpaired.fq.gz unpaired/Sample3_1_unpaired.fq.gz unpaired/Sample3_2_unpaired.fq.gz unpaired/Sample4_1_unpaired.fq.gz unpaired/Sample4_2_unpaired.fq.gz unpaired/Sample5_1_unpaired.fq.gz unpaired/Sample5_2_unpaired.fq.gz unpaired/Sample6_1_unpaired.fq.gz unpaired/Sample6_2_unpaired.fq.gz > unpaired/Sample_all_unpaired.fq.gz
 
 4.  Montagem com MetaSpades
 
 <!-- -->
 
-    metaspades.py -o 05.Assembly/sample45/ -1 02.CleanData/sample45_1_paired.fq.gz -2 02.CleanData/sample45_2_paired.fq.gz -s unpaired/sample45_12_unpaired.fq.gz -t 6 -m 100 -k 21,29,39,59,79,99,119
+    metaspades.py -o 05.Assembly/ -1 02.CleanData/Sample_all_1.fq.gz -2 02.CleanData/Sample_all_2.fq.gz-s unpaired/Sample_all_unpaired.fq.gz -t 10 -m 100 -k 21,29,39,59,79,99,119
 
 **Outputs**
 
@@ -973,28 +999,35 @@ Crie um novo ambiente virtual, chamado bioinfo, onde se instalará
 
 ### 3.2. Uso
 
-🇧🇷 Antes de rodar `metaquast.py`, é necessário trocar os nomes dos
-assemblies, já que eles tem todos o mesmo nome, `contigs.fasta` ou
-`scaffolds.fasta`. Use o comando `mv` para trocar os nomes. Siga o
-seguinte exemplo:
+🇧🇷 Se você tiver várias montagens e quer comparar todas é necessário
+trocar os nomes dos assemblies, já que eles tem todos o mesmo nome,
+`contigs.fasta` ou `scaffolds.fasta`. Use o comando `mv` para trocar os
+nomes. Siga o seguinte exemplo:
 
-> 🇪🇸 Antes de correr `metaquast.py` es necesario cambiar los nombres de
-> los montajes, ya que todos tienen el mismo nombre, `contigs.fasta` ou
-> `scaffolds.fasta`. Use el comando `mv` para cambiar los nombres. Siga
-> el siguiente ejemplo:
+> 🇪🇸 Si usted tiene varios ensambles e quiere compararlos es necesario
+> cambiar los nombres de los montajes, ya que todos tienen el mismo
+> nombre, `contigs.fasta` ou `scaffolds.fasta`. Use el comando `mv` para
+> cambiar los nombres. Siga el siguiente ejemplo:
+
+Por exemplo:
 
     mv 05.Assembly/sample1/scaffolds.fasta 05.Assembly/sample1/sample1.fasta
 
     mv 05.Assembly/sample45/scaffolds.fasta 05.Assembly/sample45/sample45.fasta
 
+Para as amostras deste tutorial não é necessário trocar os nomes porque
+só é uma montagem:
+
     # Crie um diretório pro output
     mkdir 06.AssemblyQuality
 
     # Rode Quast
-    metaquast.py 05.Assembly/sample1/sample1.fasta 05.Assembly/sample45/sample45.fasta -o 06.AssemblyQuality/ --threads 6
+    metaquast.py 05.Assembly/scaffolds.fasta -o 06.AssemblyQuality/ --threads 10
 
 **Sintaxis**
 `metaquast.py path/to/assembly/contigs.fasta -o path/to/output/`
+
+-   Pode colocar vários inputs (montagens) separados por espaço.
 
 **Interpretação dos resultados**
 
@@ -1088,17 +1121,8 @@ anotação de genes, chamada `Annotation`.
 
 ### 4.2. Uso
 
-Para facilitar o processo, passe todos os scaffolds de cada montagem
-para uma pasta só. Siga o exemplo:
-
-    mkdir 05.Assembly/scaffolds
-
-    mv 05.Assembly/sample1/sample1.fasta 05.Assembly/scaffolds/
-
-    mv 05.Assembly/sample45/sample45.fasta 05.Assembly/scaffolds
-
-    # Confira
-    ll 05.Assembly/scaffolds
+Se tiver várias montagens, passe todas as montagens para uma pasta só.
+No caso deste tutorial só é uma montagem então não é necessário.
 
 Crie uma pasta chamada `07.GenePrediction` para colocar a saída do
 **Prodigal**.
@@ -1107,7 +1131,7 @@ Crie uma pasta chamada `07.GenePrediction` para colocar a saída do
 
 A continuação encontrará o comando **individual**
 
-    prodigal -i 05.Assembly/scaffolds/sample1.fasta -f gff -o 07.GenePrediction/sample1.gff -a 07.GenePrediction/sample1.faa -d 07.GenePrediction/sample1.fa -p meta
+    prodigal -i 05.Assembly/scaffolds.fasta -f gff -o 07.GenePrediction/GenesCoordenates.gff -a 07.GenePrediction/GenesAA.faa -d 07.GenePrediction/GenesNucl.fa -p meta
 
 Se tiver várias amostras, pode usar o seguinte loop para automatizar o
 processo com todas as amostras:
@@ -1134,7 +1158,7 @@ processo com todas as amostras:
 **Formato `.gff` (Gene Feature Format)**
 
 🇧🇷 Este formato guarda as informações dos genes preditos pelo Prodigal.
-Explore-o (`less sample1.gff`).
+Explore-o (`less GenesCoordenates.gff`).
 
 Cada sequência comença com um *header* com as infromações da sequência
 analizada, seguido de uma tabela separada por tabulações com informações
@@ -1143,7 +1167,7 @@ dos genes encontrados em dita sequência.
 O *header* contém os seguentes campos:
 
 > 🇪🇸 Este formato guarda las informaciones de los genes predichos por
-> Prodigal. Explorelo (`less sample1.gff`).
+> Prodigal. Explorelo (`less GenesCoordenates.gff`).
 >
 > Cada secuencia comienza con un *header* con las informaciones de la
 > secuencia analizada, seguido de una tabla separada por tabulaciones
@@ -1257,8 +1281,7 @@ Para facilitar, no seguinte link, você encontrará as bases de dados
 **Kraken2**.
 
 Use o programa `gdown` para descarregar as dbs que se encontram em um
-GoogleDrive. Se não tiver esse `gdown` instalado, siga o seguintes
-passos:
+GoogleDrive. Se não tiver o `gdown` instalado, siga o seguintes passos:
 
 > 🇪🇸 Para la obtención de las bases de datos, puede ir directamente en
 > las páginas web de cada una. Sin embargo, tenga en cuenta que la base
@@ -1296,52 +1319,29 @@ Serão descarregados os seguintes arquivos:
 
 -   `eggnog.dmnd`: Base de dados EggNOG formatada para Diammond
 -   `kegg.dmnd`: Base de dados KEGG formatada para Diammond
--   `minikraken_8GB_202003.tgz`: Base de dados comprimida para Kraken
 
 🇧🇷 **Nota** É recomendável procurar os links originais para descarga das
 bases de dados para assim obter a versão mais atualizada (p.e.
 [Kraken2](https://ccb.jhu.edu/software/kraken2/index.shtml?t=downloads))
 
-Para usar kaiju, pode ser descarregada facilmente usando o comando
-`wget` e algun dos seguintes links:
-
 > 🇪🇸 **Nota** es recomendable buscar los links originales para descargar
 > las bases de datos en sus versiones más actualizadas (p.e.
 > [Kraken2](https://ccb.jhu.edu/software/kraken2/index.shtml?t=downloads))
->
-> Para usar kaiju, puede ser descargada facilmente usando el comando
-> `wget` e alguno de los seguientes links:
-
--   [**Kaiju\_nr\_2021-02-24
-    (52GB)**](https://kaiju.binf.ku.dk/database/kaiju_db_nr_2021-02-24.tgz) -
-    NCBI BLAST nr database. Contém todas as proteinas que pertencem a
-    Archaea, Bacteria e Virus.
-
--   [**Kaiju\_progenomes\_2021-03-02 (19
-    GB)**](https://kaiju.binf.ku.dk/database/kaiju_db_progenomes_2021-03-02.tgz) -
-    Genomas representativos da base de dados
-    [proGenomes](http://progenomes.embl.de/) **opção para máquinas com
-    menor capacidade**
-
-🇧🇷 As bases de dados de **Kraken2** e **Kaiju** devem ser descompressas
-usando o comando:
 
     ## Kraken2
-    tar -xzvf minikraken_8GB_202003.tgz
+    mkdir Kraken2
+    cd Kraken2
+
+    ## Descarregando desde o servidor dos desenvolvedores
+    wget  ftp://ftp.ccb.jhu.edu/pub/data/kraken2_dbs/old/minikraken2_v1_8GB_201904.tgz
+
+    tar zxvf minikraken2_v1_8GB_201904.tgz
 
     ## Troque o nome da pasta de saída
-    mv minikraken_8GB_20200312/ kraken2
+    mv minikraken2_v1_8GB/ mainDB
 
     ## Elimine o arquivo original
-    rm minikraken_8GB_202003.tgz
-
-    ## Coloque tudo dentro de uma pasta chamada mainDB
-    cd kraken2
-    mkdir mainDB
-    mv * mainDB/
-
-    ## Kaiju
-    tar -xzvf kaiju_db_nr_2021-02-24.tgz
+    rm minikraken2_v1_8GB_201904.tgz
 
 #### 5.1.2 Instalação Diammond
 
@@ -1375,19 +1375,7 @@ descarregou suas bases de dados*)
 > base de datos. Dígite el siguiente comando: (\*coloque el camino que
 > corresponda a donde ud descargó sus bases de datos)
 
-    export KRAKEN2_DB_PATH="home/user/Documents/dbs/kraken2/"
-
-#### 5.1.3. Instalação Kaiju
-
-[**Kaiju**](https://github.com/bioinformatics-centre/kaiju) é outra
-opção que pode ser usada para anotação taxonômica. Instale a ferramenta
-dentro do ambiente `Annotation`.
-
-    ## Se não estiver ativado
-    conda activate Annotation
-
-    ## Instale
-    conda install -c bioconda kaiju
+    export KRAKEN2_DB_PATH="/home/metagenomica/dbs/Kraken2/"
 
 ### 5.2. Anotação Funcional
 
@@ -1406,7 +1394,7 @@ dados por vez*)
     mkdir 08.FunctionalAnnotation
 
     ## Diammond
-    diamond blastx --more-sensitive --threads 6 -k 1 -f 6 qseqid qlen sseqid sallseqid slen qstart qend sstart send evalue bitscore score length pident qcovhsp --id 60 --query-cover 60 -d dbs/kegg.dmnd --query 07.GenePrediction/sample1.fa -o 08.FunctionalAnnotation/sample1_kegg.txt --tmpdir /dev/shm
+    diamond blastx --more-sensitive --threads 6 -k 1 -f 6 qseqid qlen sseqid sallseqid slen qstart qend sstart send evalue bitscore score length pident qcovhsp --id 60 --query-cover 60 -d dbs/kegg.dmnd --query 07.GenePrediction/GenesNucl.fa -o 08.FunctionalAnnotation/GeneAnnotation_kegg.txt --tmpdir /dev/shm
 
 **SINTAXE**
 
@@ -1443,16 +1431,20 @@ dados por vez*)
         -   `length` tamanho do alinhamento
         -   `pident` porcentagem de matches identicos
 
-Com o comando anterior foi feita a anotação da montagem da amostra
-`sample1` com a base de dados `kegg.dmnd` e os dados foram guardados no
-arquivo `kegg_annotation.txt`.
+Com o comando anterior foi feita a anotação do co-assembly de todas as
+amostras `scaffolds.fasta` com a base de dados `kegg.dmnd` e os dados
+foram guardados no arquivo `kegg_annotation.txt`.
 
-> 🇪🇸 Con el comando anterior fue realizada la anotación de la muestra
-> `sample1` con la base de datos `kegg.dmnd` y los datos fueron
-> guardadas en el archivo `kegg_annotation.txt`.
+> 🇪🇸 Con el comando anterior fue realizada la anotación del co-assembly
+> de todas las muestras `scaffolds.fasta` con la base de datos
+> `kegg.dmnd` y los datos fueron guardadas en el archivo
+> `GeneAnnotation_kegg.txt`.
 
-Se você quiser rodar todas suas montagens e as duas bases de dados ao
-mesmo tempo, pode usar o seguinte loop `for`:
+Se tiver mais de uma montagem e quiser rodar todas e as duas bases de
+dados ao mesmo tempo, pode usar o seguinte loop `for`:
+
+> 🇪🇸 Si tiene más de un ensamble y quiere correr todos e las dos bases
+> de datos al mismo tiempo, puede usar el siguiente loop `for`:
 
     for i in 07.GenePrediction/*.fa
     do
@@ -1468,7 +1460,9 @@ dentro da pasta `dbs/`. Veja que no loop foram declaradas duas
 variavéis, `i` que corresponde a cada um dos arquivos das ORFs
 (nucleotídeos) preditas com Prodigal e a variável `j` que corresponde a
 cada um dos arquivos terminados em `.dmnd` dentro da pasta `dbs/`, ou
-seja as bases de dados `kegg.dmnd` e `eggnog.dmnd`.
+seja as bases de dados `kegg.dmnd` e `eggnog.dmnd`. Os arquivos de saída
+são duas tabelas por cada montagem, uma da anotação com *eggnog* e outra
+com *kegg*.
 
 > 🇪🇸 Con el comado anterior, es realizada la anotación de todas las ORF
 > predichas en el directorio `07.GenePrediction/` con todas las bases de
@@ -1477,8 +1471,91 @@ seja as bases de dados `kegg.dmnd` e `eggnog.dmnd`.
 > archivos de las ORFs (nucleótidos) predichos con Prodigal e la
 > variable `j` que corresponde a cada uno de los archivos terminados en
 > `.dmnd` dentro de la carpeta `dbs/`, o sea las bases de datos
-> `kegg.dmnd` y `eggnog.dmnd`.
+> `kegg.dmnd` y `eggnog.dmnd`. Los archivos de salida son dos tablas por
+> cada ensamble, una con la anotación con *eggnog* e otra con *kegg*.
 
 ### 5.3 Anotação Taxonômica
 
-    kraken2 --db mainDB 07.GenePrediction/1d0SE.fa
+Para a anotação taxonômica será usada a ferramenta Kraken2. Depois de
+instalada a ferramenta, descarregada e configurada a base de dados, é
+possìvel rodar o comando para anotação. Lembrando que este procedimento
+deve ser feito para cada uma das predições de ORFs de cada montagem.
+
+> 🇪🇸 Para la anotación taxonómica será usado la herramienta Kraken2.
+> Despues de instalada la herramienta, descargada y configurada la base
+> de dados, es posible correr el comando para anotación. Recordando que
+> este procedimiento debe ser hecho apra cada una de las predicciones de
+> ORFs de cada ensamble.
+
+    kraken2 --db mainDB 07.GenePrediction/GenesNucl.fa 
+
+**SINTAXE**
+
+`kraken2 --db db orfs_nucleotides.fa`
+
+-   `--db`: nome da pasta onde se encontra a base de dados e que foi
+    configurada no PATH.
+-   `orfs_nucleotides.fa`: Arquivo de saída da predição de ORFs, en
+    formato `.fa` (nucleotídeos)
+
+Para rodar num comando só todas as montagens, pode ser usado o seguinte
+loop:
+
+> 🇪🇸 Para correr en un solo comando todas los ensambles, puede ser usado
+> el siguiente loop:
+
+    for i in 07.GenePrediction/*.fa
+    do
+    BASE=$(basename $i .fa)
+    kraken2 --db mainDB $i
+    done
+
+O arquivo de saída é uma tabela `.tsv` por cada montagem. As colunas
+estão organizadas da seguinte forma:
+
+1.  “C”/“U”: Para indicar se a sequência foi classificada ou não
+    classificada (*Unclassified*).
+2.  Nome do contig
+3.  Identificação Taxonômica
+4.  Tamanho da sequência em bp.
+5.  Mapeamento LCA de cada *k*-mer.
+
+## 6. Construção Tabela Final
+
+Finalmente é necessário construir uma tabela final com todas as
+anotações (taxonômica e funcional) de todas as montagens.
+
+1.  **Formatando as tabelas de anotação funcional**: Usando linha de
+    comando, serão escolhidas as colunas mais importantes.
+
+<!-- -->
+
+    for i in 08.FunctionalAnnotation/*.txt
+    do
+    BASE=$(basename $i .txt)
+    cut -f1,3,15 $i > 08.FunctionalAnnotation/${BASE}_formated.txt
+    done
+
+2.  **Adicionando uma coluna com o nome da montagem**
+
+<!-- -->
+
+    cd 08.FunctionalAnnotation/
+
+    for i in *; do nawk '{print FILENAME"\t"$0}' $i > $i.bk; mv $i.bk $i; done
+
+3.  **Formatando as tabelas da anotação taxonômica**
+
+<!-- -->
+
+    cd ../09.TaxonomicAnnotation/
+
+    for i in *.tsv
+    do
+    BASE=$(basename $i .tsv)
+    cut -f2,3 $i > ${BASE}_formated.tsv
+    done
+
+------------------------------------------------------------------------
+
+## Em construção…

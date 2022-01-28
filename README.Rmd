@@ -51,44 +51,49 @@ Depois de instalado, *Anaconda* e o gestor *Conda*, podram ser criados *ambiente
 
 ### 0.1. Sequências
 
-🇧🇷 Em este tutorial serão usadas seis metagenomas exemplo para rodar todo o *pipeline*. Descarregue os [*datasets*]() usando o comando `wget`.
+🇧🇷 Em este tutorial serão usadas seis metagenomas exemplo para rodar todo o *pipeline*. Descarregue os datasets usando o comando `wget`.
 
-> 🇪🇸 En este tutorial serán usados seis metagenomas ejemplo para correr todo el *pipeline*. Descargue los [*datasets*]() usando el comando `wget`.
+> 🇪🇸 En este tutorial serán usados seis metagenomas ejemplo para correr todo el *pipeline*. Descargue los datasets usando el comando `wget`.
 
-**Arquivos**
-
-* `sample1_1.fq.gz` e `sample1_2.fq.gz`: Amostra 1
-* `sample2_1.fq.gz` e `sample2_2.fq.gz`: Amostra 2
-* `sample3_1.fq.gz` e `sample3_2.fq.gz`: Amostra 3
-* `sample4_1.fq.gz` e `sample4_2.fq.gz`: Amostra 4
-* `sample5_1.fq.gz` e `sample5_2.fq.gz`: Amostra 5
-* `sample6_1.fq.gz` e `sample6_2.fq.gz`: Amostra 6
-
-A continuação encontrará uma série de comandos para organizar adequadamente os diretórios com as amostras.
 
 ```
-## Crie um diretório raiz para todo o processo
-mkdir metagenomica
-
-## Entre al nuevo directorio
+# Crie um diretório para este tutorail
+mkdir metagenomica 
 cd metagenomica/
+```
+Agora dentro de metagenomica crie outro diretório chamado `00.RawData`, onde vai descarregar o dataset de exemplo para este tutorial
 
-## Crie um novo diretório para colocar os dados brutos
+```
 mkdir 00.RawData
-
-## Entre em 00.RawData
-cd 00.RawData/
-```
-Use o comando `mv` para mover os arquivos até o diretório `00.RawData/`. 
-
-No final do processo de organização deve ver seus diretórios assim:
-`ls 00.RawData/`
-
-```
-sample1_1.fq.gz   sample1_2.fq.gz   sample2_1.fq.gz   sample2_2.fq.gz   sample3_1.fq.gz   sample3_2.fq.gz   sample4_1.fq.gz   sample4_2.fq.gz   sample5_1.fq.gz   sample5_2.fq.gz   sample6_1.fq.gz   sample6_2.fq.gz
 ```
 
-É fortmente recomendado rodar os comandos desde o diretório base, que neste caso é: `metagenomica/`
+Para descarregar o dataset...
+```
+curl -L https://figshare.com/ndownloader/articles/19015058/versions/1 -o 00.RawData/dataset.zip
+unzip 00.RawData/dataset.zip
+rm 00.RawData/dataset.zip
+```
+Com `ls`você pode ver o conteúdo descarregado. 
+
+```
+ls 00.RawData
+```
+
+Por último "listou" (`ls`) o conteúdo da pasta `00.RawData`, vai observar que têm 4 amostras paired-end (R1 e R2) 
+```
+Sample1_1.fq.gz Sample1_2.fq.gz Sample2_1.fq.gz Sample2_2.fq.gz Sample3_1.fq.gz Sample3_2.fq.gz Sample4_1.fq.gz Sample4_2.fq.gz Sample5_1.fq.gz Sample5_2.fq.gz Sample6_1.fq.gz Sample6_2.fq.gz
+```
+É fortemente recomendado rodar os comandos desde o diretório base, que neste caso é: `metagenomica/`
+
+<style>
+div.blue { background-color:#e6f0ff; border-radius: 5px; padding: 20px;}
+</style>
+<div class = "blue">
+
+> **Nota importante: A maioria dos comandos que encontrará a continuação, terão um parâmetro para definir o número de núcleos/threads/cpus (`-t/--threads/`) que serão usados para o processamento de cada comando. Coloque o número de núcleos baseado na sua máquina o servidor que esteja usando para rodar as análises. Procure não usar todos os núcleos disponíveis.**
+
+</div>
+
 
 ## 1. Controle da Qualidade
 
@@ -156,7 +161,7 @@ conda activate QualityControl
 pwd
 ```
 
-🇧🇷 Deve estar em `~/metagenomica/`.. Se esse não é o resultado del comando `pwd`, use o comando `cd` para chegar no diretório desejado.
+🇧🇷 Deve estar em `~/metagenomica/`. Se esse não é o resultado del comando `pwd`, use o comando `cd` para chegar no diretório desejado.
 
 > 🇪🇸 Debe estar em `~/metagenomica/`. Si ese no es el resultado del comando `pwd`, use el comando `cd` para llegar en el directorio base.
 
@@ -187,7 +192,11 @@ Descarregue os arquivos `html` e explore no seu *web browser*.
 
 Observe as estatísticas básicas que se encontram na primeira tabela. Alí, você pode saber quantas sequências tem, o tamanho e o %GC. O gráfico mais importante para saber a quealidade das leituras, é o primeiro, *Per base sequence quality*. Este gráfico é um boxplot com a distribuição dos valores de qualidade *Phred Score* (eje y) em cada um dos nucleotídeos das leituras (eje x). Se consideram sequências de excelente qualidade quando o *Phred Score > 30*. É norla que o pair 2 apresente uma qualidade um pouco inferior ao pair 1.
 
+As amostras deste tutorial, apresentam qualidade um pouco baixa, principalmente no pair2. Por tanto, será necessário fazer a fase da trimagem.
+
 > 🇪🇸 Observe las estadísticas básicas que se encuentran en la primera tabla. Allí, ud puede saber cuantas secuencias tiene, el tamaño y el %GC. El gráfico más importante para saber la calidad de las lecturas es el primero, *Per base sequence quality*. Este gráfico es un boxblot con la distribución de los valores de calidad *Phred Score* (eje y) en cada uno de los nucleótidos de las lecturas (eje x). Se consideran secuencias de excelente calidad cuando el *Phred Score > 30*. Es normal que el pair 2 presente una calidad un poco inferior al pair 1. 
+>
+> Las muestras de este tutorial, presentan calidad un poco baja, principalmente en el pair2. Por lo tanto, será necesario hacer la fase de depuración. 
 
 
 ### 1.2. Trimagem
@@ -259,7 +268,7 @@ trimmomatic PE -threads 10 $i  00.RawData/${BASE}2.fastq.gz 02.CleanData/${BASE}
 done
 ```
 
-**Sintaxe**
+**SINTAXE**
 `trimmomatic PE -threads input_forward input_reverse output_forward_paired output_forward_unpaired output_reverse_paired output_reverse_unpaired [opções]`
 
 🇧🇷 O comando anterior tem muitas partes. Primeiro, o nome do comando é `trimmomatic`, a continuação a opção `PE` indica para o programa que as sequências que irão ser analisadas são de tipo *paired end*. Depois se encontram os inputs, forward (pair1) e reverse (pair2). Depois estão os outputs, sendo o primeiro, as sequências forward pareadas (limpas) e não pareadas ("descartadas") e depois igual para as sequências reverse. Por último se encontram os parâmetros de filtragem. Para este caso usamos os parâmetros `SLIDINGWINDOW`, `LEADING` e `TRAILING`. O primeiro de eles, gera uma janela deslizante, que em este caso vai de 4 em 4 bases, cálcula a média do *Phred Score* e se estiver por baixo de 15 essas bases serão cortadas. `LEADING` corta bases do começo da leitura que estejam por debaixo do *threshold* de qualidade, igualmente faz o `TRAILING` mas no final das leituras. `MINLEN` elimina todas as reads com tamanho menor ao informado. Trimmomatic tem muitos mais parâmetros para customizar, veja no [manual](http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf).
@@ -430,12 +439,13 @@ summary(nps) #mostra o resumo em forma de tabela
 
 Vai obter um gráfico com as curvas de saturação de cada amostra, como este:
 
-<img src="imgs/nonpareil.webp" align='center' width="80%">
+<img src="imgs/nonpareil.png" align='center' width="80%">
 
-🇧🇷 As linhas tracejadas <font color='red'> vermelha </font> e <font color='gray'> cinza </font> representam os *threshold* de 95% e 99% da cobertura média, respeitivamente. O circulo em cada curva representa a cobertura atual das amostras, o ideal é que esteja por cima do primeiro *threshold*. As curvas também apresentam a estimação de quanto esforço de sequenciamento é necessário (zetas no eixo x).
+🇧🇷 As linhas tracejadas <font color='red'> vermelha </font> e <font color='gray'> cinza </font> representam os *threshold* de 95% e 99% da cobertura média, respeitivamente. O circulo em cada curva representa a cobertura atual das amostras, o ideal é que esteja por cima do primeiro *threshold*. As curvas também apresentam a estimação de quanto esforço de sequenciamento é necessário (zetas no eixo x). Devido a que se trata de um dataset exemplo que foi obtido apartir de um subsample aleatorio de um conjunto de dados, a maioria das amostras não conseguem uma boa cobertura. As curvas reais para as amostras originais se apresentam a continuação:
 
-> 🇪🇸 Las líneas punteadas <font color='red'> roja </font> y <font color='gray'> gris </font> representam los *threshold* de 95% y 99% de cobertura promedio, respectivamente. El círculo en cada curva representa la cobertura actual de las muestras, lo ideal es que estén por encima del primer *threshold*. Las curvas también presentan la estimación de cuanto esfuerzo de secuenciación es necesario (flechas en el eje x). 
+> 🇪🇸 Las líneas punteadas <font color='red'> roja </font> y <font color='gray'> gris </font> representam los *threshold* de 95% y 99% de cobertura promedio, respectivamente. El círculo en cada curva representa la cobertura actual de las muestras, lo ideal es que estén por encima del primer *threshold*. Las curvas también presentan la estimación de cuanto esfuerzo de secuenciación es necesario (flechas en el eje x). Debido a que se trata de un dataset ejemplo que fue obtenido a partir de un subsample aleatorio de un conjunto de datos, la mayoria de las muestras no consiguen una buena cobertura. Las curvas reales para las muestras originais se presentan a continuación:
 
+<img src="imgs/realnonpareil.png" align='center' width="80%">
 
 ### 1.4. Análise de Distâncias MinHash
 
@@ -556,7 +566,7 @@ Vai obter um heatmap com clusterização similar a este:
 
 <img src="imgs/distances.png" align='center' width="80%">
 
-Faça *co-assembly* para *datasets* com distâncias menores de 0.1, entre ellas.
+Faça *co-assembly* para *datasets* com distâncias menores de 0.1, entre ellas. Como pode ser observado, se formaram dois grandes cluster as amostras 1 a 3 e amostras 4 a 6. No entanto, os dois clusters são proóximos entre eles. Por tanto podem ser montados todos em um co-assembly só. 
 
 
 ## 2. Montagem dos Metagenomas
@@ -627,25 +637,25 @@ metaspades.py -o 05.Assembly/sample1/ -1 02.CleanData/sample1_1_paired.fq.gz -2 
 1. Concatene os pair 1
 
 ```
-cat 02.CleanData/sample4_1.fq.gz 02.CleanData/sample5_1.fq.gz > 02.CleanData/sample45_1.fq.gz
+cat 02.CleanData/Sample1_1.fq.gz 02.CleanData/Sample2_1.fq.gz 02.CleanData/Sample3_1.fq.gz 02.CleanData/Sample4_1.fq.gz 02.CleanData/Sample5_1.fq.gz 02.CleanData/Sample6_1.fq.gz > 02.CleanData/Sample_all_1.fq.gz
 ```
 
 2. Concatene os pair 2
 
 ```
-cat 02.CleanData/sample4_2.fq.gz 02.CleanData/sample5_2.fq.gz > 02.CleanData/sample45_2.fq.gz
+cat 02.CleanData/Sample1_2.fq.gz 02.CleanData/Sample2_2.fq.gz 02.CleanData/Sample3_2.fq.gz 02.CleanData/Sample4_2.fq.gz 02.CleanData/Sample5_2.fq.gz 02.CleanData/Sample6_2.fq.gz > 02.CleanData/Sample_all_2.fq.gz
 ```
 
 3. Se você quiser usar as *reads* no pareadas (saída do **Trimmomatic**), deve primeiro concatenarlas em um arquivo só
 
 ```
-cat unpaired/sample4_1_unpaired.fq.gz unpaired/sample4_2_unpaired.fq.gz unpaired/sample5_1_unpaired.fq.gz unpaired/sample5_2_unpaired.fq.gz > unpaired/sample45_12_unpaired.fq.gz
+cat unpaired/Sample1_1_unpaired.fq.gz unpaired/Sample1_2_unpaired.fq.gz unpaired/Sample2_1_unpaired.fq.gz unpaired/Sample2_2_unpaired.fq.gz unpaired/Sample3_1_unpaired.fq.gz unpaired/Sample3_2_unpaired.fq.gz unpaired/Sample4_1_unpaired.fq.gz unpaired/Sample4_2_unpaired.fq.gz unpaired/Sample5_1_unpaired.fq.gz unpaired/Sample5_2_unpaired.fq.gz unpaired/Sample6_1_unpaired.fq.gz unpaired/Sample6_2_unpaired.fq.gz > unpaired/Sample_all_unpaired.fq.gz
 ```
 
 4. Montagem com MetaSpades
 
 ```
-metaspades.py -o 05.Assembly/sample45/ -1 02.CleanData/sample45_1_paired.fq.gz -2 02.CleanData/sample45_2_paired.fq.gz -s unpaired/sample45_12_unpaired.fq.gz -t 6 -m 100 -k 21,29,39,59,79,99,119
+metaspades.py -o 05.Assembly/ -1 02.CleanData/Sample_all_1.fq.gz -2 02.CleanData/Sample_all_2.fq.gz-s unpaired/Sample_all_unpaired.fq.gz -t 10 -m 100 -k 21,29,39,59,79,99,119
 ```
 
 **Outputs**
@@ -686,26 +696,32 @@ conda install -c bioconda quast
 
 ### 3.2. Uso
 
-🇧🇷 Antes de rodar `metaquast.py`, é necessário trocar os nomes dos assemblies, já que eles tem todos o mesmo nome, `contigs.fasta` ou `scaffolds.fasta`. Use o comando `mv` para trocar os nomes. Siga o seguinte exemplo:
+🇧🇷 Se você tiver várias montagens e quer comparar todas é necessário trocar os nomes dos assemblies, já que eles tem todos o mesmo nome, `contigs.fasta` ou `scaffolds.fasta`. Use o comando `mv` para trocar os nomes. Siga o seguinte exemplo:
 
-> 🇪🇸 Antes de correr `metaquast.py` es necesario cambiar los nombres de los montajes, ya que todos tienen el mismo nombre, `contigs.fasta` ou `scaffolds.fasta`. Use el comando `mv` para cambiar los nombres. Siga el siguiente ejemplo:
+> 🇪🇸 Si usted tiene varios ensambles e quiere compararlos es necesario cambiar los nombres de los montajes, ya que todos tienen el mismo nombre, `contigs.fasta` ou `scaffolds.fasta`. Use el comando `mv` para cambiar los nombres. Siga el siguiente ejemplo:
 
+
+Por exemplo:
 ```
 mv 05.Assembly/sample1/scaffolds.fasta 05.Assembly/sample1/sample1.fasta
 
 mv 05.Assembly/sample45/scaffolds.fasta 05.Assembly/sample45/sample45.fasta
 ```
 
+Para as amostras deste tutorial não é necessário trocar os nomes porque só é uma montagem:
+
 ```
 # Crie um diretório pro output
 mkdir 06.AssemblyQuality
 
 # Rode Quast
-metaquast.py 05.Assembly/sample1/sample1.fasta 05.Assembly/sample45/sample45.fasta -o 06.AssemblyQuality/ --threads 6
+metaquast.py 05.Assembly/scaffolds.fasta -o 06.AssemblyQuality/ --threads 10
 ```
 
 **Sintaxis**
 `metaquast.py path/to/assembly/contigs.fasta -o path/to/output/`
+
+* Pode colocar vários inputs (montagens) separados por espaço.
 
 **Interpretação dos resultados**
 
@@ -722,7 +738,6 @@ Explore o diretório do output usando o comando `ls`.
 > 🇪🇸 `06.AssemblyQuality/report.html`: reporte puede ser abierto en un *web browser* y contiene las informaciones más relevantes. Como número de contigs, tamaño del mayor contig, tamaño total del montaje, N50, etc.
 
 <img src="imgs/report_quast1.png" align="center" width = "100%"/>
-
 
 * `06.AssemblyQuality/report.tex`, `06.AssemblyQuality/report.txt`, `06.AssemblyQuality/report.tsv`, `06.AssemblyQuality/report.pdf`: é o mesmo relatório porém em diferentes formatos. 
 
@@ -760,18 +775,7 @@ conda install -c bioconda prodigal
 
 ### 4.2. Uso
 
-Para facilitar o processo, passe todos os scaffolds de cada montagem para uma pasta só. Siga o exemplo:
-
-```
-mkdir 05.Assembly/scaffolds
-
-mv 05.Assembly/sample1/sample1.fasta 05.Assembly/scaffolds/
-
-mv 05.Assembly/sample45/sample45.fasta 05.Assembly/scaffolds
-
-# Confira
-ll 05.Assembly/scaffolds
-```
+Se tiver várias montagens, passe todas as montagens para uma pasta só. No caso deste tutorial só é uma montagem então não é necessário.
 
 Crie uma pasta chamada `07.GenePrediction` para colocar a saída do **Prodigal**.
 
@@ -780,7 +784,7 @@ Crie uma pasta chamada `07.GenePrediction` para colocar a saída do **Prodigal**
 A continuação encontrará o comando **individual** 
 
 ```
-prodigal -i 05.Assembly/scaffolds/sample1.fasta -f gff -o 07.GenePrediction/sample1.gff -a 07.GenePrediction/sample1.faa -d 07.GenePrediction/sample1.fa -p meta
+prodigal -i 05.Assembly/scaffolds.fasta -f gff -o 07.GenePrediction/GenesCoordenates.gff -a 07.GenePrediction/GenesAA.faa -d 07.GenePrediction/GenesNucl.fa -p meta
 ```
 Se tiver várias amostras, pode usar o seguinte loop para automatizar o processo com todas as amostras:
 
@@ -805,13 +809,13 @@ prodigal -i assembly.fasta -f <gbk, gff, sqn, sco> -o coord -a proteins.faa -d n
 
 **Formato `.gff` (Gene Feature Format)**
 
-🇧🇷 Este formato guarda as informações dos genes preditos pelo Prodigal. Explore-o (`less sample1.gff`).
+🇧🇷 Este formato guarda as informações dos genes preditos pelo Prodigal. Explore-o (`less GenesCoordenates.gff`).
 
 Cada sequência comença com um *header* com as infromações da sequência analizada, seguido de uma tabela separada por tabulações com informações dos genes encontrados em dita sequência.
 
 O *header* contém os seguentes campos:
 
-> 🇪🇸 Este formato guarda las informaciones de los genes predichos por Prodigal. Explorelo (`less sample1.gff`).
+> 🇪🇸 Este formato guarda las informaciones de los genes predichos por Prodigal. Explorelo (`less GenesCoordenates.gff`).
 > 
 > Cada secuencia comienza con un *header* con las informaciones de la secuencia analizada, seguido de una tabla separada por tabulaciones con informaciones de los genes encontrados en dicha secuencia.
 > 
@@ -973,7 +977,7 @@ A continuação se encontra o comando ndividual (*uma montagem e uma base de dad
 mkdir 08.FunctionalAnnotation
 
 ## Diammond
-diamond blastx --more-sensitive --threads 6 -k 1 -f 6 qseqid qlen sseqid sallseqid slen qstart qend sstart send evalue bitscore score length pident qcovhsp --id 60 --query-cover 60 -d dbs/kegg.dmnd --query 07.GenePrediction/sample1.fa -o 08.FunctionalAnnotation/sample1_kegg.txt --tmpdir /dev/shm
+diamond blastx --more-sensitive --threads 6 -k 1 -f 6 qseqid qlen sseqid sallseqid slen qstart qend sstart send evalue bitscore score length pident qcovhsp --id 60 --query-cover 60 -d dbs/kegg.dmnd --query 07.GenePrediction/GenesNucl.fa -o 08.FunctionalAnnotation/GeneAnnotation_kegg.txt --tmpdir /dev/shm
 ```
 
 **SINTAXE**
@@ -1005,12 +1009,14 @@ diamond blastx --more-sensitive --threads -k -f --id --query-cover -d dbs/db.dmn
     * `length` tamanho do alinhamento
     * `pident` porcentagem de matches identicos
     
-Com o comando anterior foi feita a anotação da montagem da amostra `sample1` com a base de dados `kegg.dmnd` e os dados foram guardados no arquivo `kegg_annotation.txt`.
+Com o comando anterior foi feita a anotação do co-assembly de todas as amostras `scaffolds.fasta` com a base de dados `kegg.dmnd` e os dados foram guardados no arquivo `kegg_annotation.txt`.
 
-> 🇪🇸 Con el comando anterior fue realizada la anotación de la muestra `sample1` con la base de datos `kegg.dmnd` y los datos fueron guardadas en el archivo `kegg_annotation.txt`. 
+> 🇪🇸 Con el comando anterior fue realizada la anotación del co-assembly de todas las muestras `scaffolds.fasta` con la base de datos `kegg.dmnd` y los datos fueron guardadas en el archivo `GeneAnnotation_kegg.txt`. 
 
 
-Se você quiser rodar todas suas montagens e as duas bases de dados ao mesmo tempo, pode usar o seguinte loop `for`:
+Se tiver mais de uma montagem e quiser rodar todas e as duas bases de dados ao mesmo tempo, pode usar o seguinte loop `for`:
+
+> 🇪🇸 Si tiene más de un ensamble y quiere correr todos e las dos bases de datos al mismo tiempo, puede usar el siguiente loop `for`:
 
 ```
 for i in 07.GenePrediction/*.fa
@@ -1034,7 +1040,7 @@ Para a anotação taxonômica será usada a ferramenta Kraken2. Depois de instal
 > 🇪🇸 Para la anotación taxonómica será usado la herramienta Kraken2. Despues de instalada la herramienta, descargada y configurada la base de dados, es posible correr el comando para anotación. Recordando que este procedimiento debe ser hecho apra cada una de las predicciones de ORFs de cada ensamble.
 
 ```
-kraken2 --db mainDB 07.GenePrediction/sample1.fa 
+kraken2 --db mainDB 07.GenePrediction/GenesNucl.fa 
 ```
 **SINTAXE**
 
@@ -1062,7 +1068,6 @@ O arquivo de saída é uma tabela `.tsv` por cada montagem. As colunas estão or
 3. Identificação Taxonômica
 4. Tamanho da sequência em bp.
 5. Mapeamento LCA de cada *k*-mer.
-
 
 ## 6. Construção Tabela Final
 
@@ -1099,7 +1104,9 @@ done
 ```
 
 
+---
 
+## Em construção...
 
 
 
