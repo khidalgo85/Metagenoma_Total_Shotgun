@@ -336,7 +336,7 @@ Para os dados aqui analizados se usara a seguinte linha de comando:
     mkdir unpaired
 
     # Corra Trimmomatic
-    trimmomatic PE -threads 10 00.RawData/sample1_1.fastq.gz 00.RawData/sample1_2.fastq.gz 02.CleanData/sample1_1_paired.fastq.gz unpaired/sample1_1_unpaired.fastq.gz 02.CleanData/sample1_2_paired.fastq.gz unpaired/sample1_2_unpaired.fastq.gz LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:150
+    trimmomatic PE -threads 10 00.RawData/Sample1_1.fastq.gz 00.RawData/Sample1_2.fastq.gz 02.CleanData/Sample1_1_paired.fastq.gz unpaired/Sample1_1_unpaired.fastq.gz 02.CleanData/Sample1_2_paired.fastq.gz unpaired/Sample1_2_unpaired.fastq.gz LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:150
 
 🇧🇷 Com o comando anterior você tem que rodar a linha de comando para
 cada amostra. Se quiser rodar todas as amostras de maneira automâtica é
@@ -400,8 +400,8 @@ sequências limpas usando novamente FastQC.
     fastqc -t 10 02.CleanData/* -o 01.FastqcReports/
 
 Descargue los reportes `.html` de las secuencias pareadas
-(i.e. `01.FastqcReports/sample1_1_paired_fastqc.html` y
-`01.FastqcReports/sample1_2_paired_fastqc.html`).
+(i.e. `01.FastqcReports/Sample1_1_paired_fastqc.html` y
+`01.FastqcReports/Sample1_2_paired_fastqc.html`).
 
 Faça uma tabela com o número de sequências antes e depois da trimagem
 para calcular a porcentagem de *reads* que sobreveviveram ao processo.
@@ -484,7 +484,7 @@ um dos argumentos, explore o menú de ajuda da ferramenta.
     nonpareil --help
 
     # Comando do NonPareil para cada amostra
-    nohup nonpareil -s sample1.fq -T kmer -f fastq -b sample1 -t 6 &
+    nohup nonpareil -s Sample1.fq -T kmer -f fastq -b Sample1 -t 6 &
 
 No caso, se tiver várias amostras pode usar o seguinte loop para
 facilitar o processo.
@@ -512,7 +512,7 @@ esforço de sequenciamento (em número de reads), as demais colunas têm
 informação sobre a distribuição da redundância a determinado esforço de
 sequenciamento. Usando os arquivos `.npo` e o R, pode gráficar as curvas
 de saturação. A continuação se encontra o script. Além dos arquivos
-`.npo` é necessário criar um arquivo chamado `samples.txt`, o qual deve
+`.npo` é necessário criar um arquivo chamado `Samples.txt`, o qual deve
 ter três colunas (separadas por tabulações), a primeira terá o nome de
 cada arquivo `.npo`, a segunda o nome da amostra, e a terceira a cor em
 formato JSON que vai ser usada para a curva. A continuação se encontram
@@ -530,7 +530,7 @@ arquivo pode ser construido em um bloco de notas, ou incluso no excel.
 > el script.
 >
 > Además de los archivos `.npo` es necesario crear un archivo llamado
-> `samples.txt`, el cual debe tener tres columnas (separadas por
+> `Samples.txt`, el cual debe tener tres columnas (separadas por
 > tabulaciones), la primera tendrá el nombre de cada archivo `.npo`, la
 > segunda el nombre de la muestra, y la tercera el color en formato JSON
 > que va a ser usado para la curva. A continuación se encontran una
@@ -571,10 +571,10 @@ Copie os códigos **HEX json** das cores e coloque dentro de um arquivo
 Cree o arquivo final com os títulos de las columnas e una los três
 arquivos gerados anteriormente:
 
-    echo -e 'File\tName\tCol' > samples.txt
+    echo -e 'File\tName\tCol' > Samples.txt
 
-    # Unindo os arquivos dentro de samples.txt
-    paste -d'\t' files.txt prefix.txt colors.txt >> samples.txt
+    # Unindo os arquivos dentro de Samples.txt
+    paste -d'\t' files.txt prefix.txt colors.txt >> Samples.txt
 
 Use `less` para explorar o arquivo, ele deve se ver assim:
 
@@ -586,7 +586,7 @@ Use `less` para explorar o arquivo, ele deve se ver assim:
     Sample5.npo   Sample5   "#688ccd"
     Sample6.npo   Sample6   "#4bb092"
 
-Descarregue os arquivos `.npo` e o arquivo `samples.txt`. Usando o
+Descarregue os arquivos `.npo` e o arquivo `Samples.txt`. Usando o
 seguinte script do R, grafique as curvas de saturação. \*Nota: todos os
 arquivos descarregados devem estar dentro de uma pasta só, p.e.
 `03.NonPareil`.
@@ -594,19 +594,19 @@ arquivos descarregados devem estar dentro de uma pasta só, p.e.
 ``` r
 install.packages("Nonpareil") #para instalar o pacote
 library(Nonpareil) # ativa o pacote
-setwd("~/03.NonPareil") # determina seu diretório de trabalho (coloque o seu, onde colocou os arquivos .npo e o arquivo samples.txt)
+setwd("~/03.NonPareil") # determina seu diretório de trabalho (coloque o seu, onde colocou os arquivos .npo e o arquivo Samples.txt)
 
-samples <- read.table('samples.txt', sep='\t', header=TRUE, as.is=TRUE); #lê o arquivo samples.txt com a informação das amostras
+Samples <- read.table('Samples.txt', sep='\t', header=TRUE, as.is=TRUE); #lê o arquivo Samples.txt com a informação das amostras
 
-attach(samples);
+attach(Samples);
 nps <- Nonpareil.set(File, col=Col, labels=Name, 
                      plot.opts=list(plot.observed=FALSE, 
                                     ylim = c(0, 1.05),
                                     legend.opts = FALSE)) #grafica as curvas
 
-Nonpeil.legeng(nps, x.intersp=0.5, y.intersp=0.7, pt.cex=0.5, cex=0.5) #coloca e personaliza a legenda
+Nonpareil.legengd(nps, x.intersp=0.5, y.intersp=0.7, pt.cex=0.5, cex=0.5) #coloca e personaliza a legenda
   
-detach(samples);
+detach(Samples);
 summary(nps) #mostra o resumo em forma de tabela
 ```
 
@@ -622,7 +622,7 @@ representa a cobertura atual das amostras, o ideal é que esteja por cima
 do primeiro *threshold*. As curvas também apresentam a estimação de
 quanto esforço de sequenciamento é necessário (zetas no eixo x). Devido
 a que se trata de um dataset exemplo que foi obtido apartir de um
-subsample aleatorio de um conjunto de dados, a maioria das amostras não
+subSample aleatorio de um conjunto de dados, a maioria das amostras não
 conseguem uma boa cobertura. As curvas reais para as amostras originais
 se apresentam a continuação:
 
@@ -633,7 +633,7 @@ se apresentam a continuação:
 > por encima del primer *threshold*. Las curvas también presentan la
 > estimación de cuanto esfuerzo de secuenciación es necesario (flechas
 > en el eje x). Debido a que se trata de un dataset ejemplo que fue
-> obtenido a partir de un subsample aleatorio de un conjunto de datos,
+> obtenido a partir de un subSample aleatorio de un conjunto de datos,
 > la mayoria de las muestras no consiguen una buena cobertura. Las
 > curvas reales para las muestras originais se presentan a continuación:
 
@@ -726,7 +726,7 @@ distâncias par a par:
 > Usando `mash info` puede verificar el contenido y, en seguida, estimar
 > las distancias par a par:
 
-    mash sketch -o 04.MinHash/reference 04.MinHash/sample1.fq 04.MinHash/sample2.fq 04.MinHash/sample3.fq 04.MinHash/sample4.fq 04.MinHash/sample5.fq 04.MinHash/sample6.fq
+    mash sketch -o 04.MinHash/reference 04.MinHash/Sample1.fq 04.MinHash/Sample2.fq 04.MinHash/Sample3.fq 04.MinHash/Sample4.fq 04.MinHash/Sample5.fq 04.MinHash/Sample6.fq
 
     #verifiyng
     mash info 04.MinHash/reference.msh
@@ -878,13 +878,13 @@ A continuação se encontram os comandos se sua montagem for individual:
 
 <!-- -->
 
-    cat unpaired/sample1_1_unpaired.fq.gz unpaired/sample1_2_unpaired.fq.gz > unpaired/sample1_12_unpaired.fq.gz
+    cat unpaired/Sample1_1_unpaired.fq.gz unpaired/Sample1_2_unpaired.fq.gz > unpaired/Sample1_12_unpaired.fq.gz
 
 3.  Montagem com MetaSpades
 
 <!-- -->
 
-    metaspades.py -o 05.Assembly/sample1/ -1 02.CleanData/sample1_1_paired.fq.gz -2 02.CleanData/sample1_2_paired.fq.gz -s unpaired/sample1_12_unpaired.fq.gz -t 6 -m 100 -k 21,29,39,59,79,99,119
+    metaspades.py -o 05.Assembly/Sample1/ -1 02.CleanData/Sample1_1_paired.fq.gz -2 02.CleanData/Sample1_2_paired.fq.gz -s unpaired/Sample1_12_unpaired.fq.gz -t 6 -m 100 -k 21,29,39,59,79,99,119
 
 **Sintaxe**
 
@@ -998,9 +998,9 @@ nomes. Siga o seguinte exemplo:
 
 Por exemplo:
 
-    mv 05.Assembly/sample1/scaffolds.fasta 05.Assembly/sample1/sample1.fasta
+    mv 05.Assembly/Sample1/scaffolds.fasta 05.Assembly/Sample1/Sample1.fasta
 
-    mv 05.Assembly/sample45/scaffolds.fasta 05.Assembly/sample45/sample45.fasta
+    mv 05.Assembly/Sample45/scaffolds.fasta 05.Assembly/Sample45/Sample45.fasta
 
 Para as amostras deste tutorial não é necessário trocar os nomes porque
 só é uma montagem:
@@ -1441,10 +1441,12 @@ dados ao mesmo tempo, pode usar o seguinte loop `for`:
     for i in 07.GenePrediction/*.fa
     do
     BASE=$(basename $i .fa)
-      for j in dbs/*dmnd
+      for j in dbs/*.dmnd
       do
       db=$(basename $j .dmnd)
     diamond blastx --more-sensitive --threads 6 -k 1 -f 6 qseqid qlen sseqid sallseqid slen qstart qend sstart send evalue bitscore score length pident qcovhsp --id 60 --query-cover 60 -d $j --query $i -o 08.FunctionalAnnotation/${BASE}_${db}.txt --tmpdir /dev/shm
+    done
+    done
 
 Com o comando anterior, é feita a anotação em todas as ORFs preditas na
 pasta `07.GenePrediction/` com todas as bases de dados para diammond
@@ -1511,6 +1513,255 @@ estão organizadas da seguinte forma:
 3.  Identificação Taxonômica
 4.  Tamanho da sequência em bp.
 5.  Mapeamento LCA de cada *k*-mer.
+
+## 6. Mapeamento
+
+Agora precisamos mapear as ORFs anotadas nos contigs gerados no
+assembly. A ferramenta principal durante este proceso se chama
+[Bowtie2](https://github.com/BenLangmead/bowtie2), a qual é uma
+ferramenta que permite o mapeamento de sequências. Também será usado o
+programa [Samtools](https://github.com/samtools/samtools) para a
+transformação e manejo dos arquivos do mapeamento.
+
+### 6.1. Instalação
+
+Para a instalação das ferramentas do mapeamento, crie um ambiente
+virtual chamado **Mapping**.
+
+    # Crie o ambiente
+    conda create -n Mapping
+
+    # Ative o ambiente
+    conda activate Mapping
+
+#### 6.1.1. Bowtie2
+
+    conda install -c bioconda bowtie2
+
+#### 6.1.2. SamTools
+
+    conda install -c bioconda samtools=1.9
+
+### 6.2 Uso
+
+#### 6.2.1. Formatação de Tabelas
+
+Primeiro será formatadas as tabelas de anotação funcional; Para isto
+pode ser usado `cut`, com o qual são escolhidas as colunas mais
+importantes das tabelas.
+
+    cut -f1,3,15 08.FunctionalAnnotation/GeneAnnotation_kegg.txt > 08.FunctionalAnnotation/GeneAnnotation_kegg_formated.txt
+
+**Loop**
+
+    for i in 08.FunctionalAnnotation/*.txt
+    do
+    BASE=$(basename $i .txt)
+    cut -f1,3,15 $i > 08.FunctionalAnnotation/${BASE}_formated.txt
+    done
+
+Após este processo, serão obtidos arquivos `.txt` formatados, só com 3
+colunas, IDs do *query*, IDs das DBs, porcentagem de identidade.
+
+#### 6.2.2. Extração de Sequências anotadas
+
+Seguindo com o processo, o seguinte passo é criar listas dos IDs dos
+*query*, também usando o comando `cut`.
+
+    cut -f1 08.FunctionalAnnotation/GeneAnnotation_kegg_formated.txt > 08.FunciontalAnnotation/GeneAnnotation_kegg_contigsIDs.txt
+
+**Loop**
+
+    for i in 08.FunctionalAnnotation/*_formated.txt; do BASE=$(basename $i _formated.txt); cut -f1 $i > 08.FunctionalAnnotation/${BASE}_contigsIDs.txt; done
+
+No comando anterior, basicamente são criados novos arquivos
+(`_contigsIDs.txt`) com a primeira coluna das tabelas formatadas, que
+contém os IDs.
+
+A continuação, use os últimos arquivos gerados
+(`GeneAnnotation_kegg_contigsIDs.txt`) para extrair as sequências desses
+genes anotados. Ou seja, use a lista dos IDs, para que sejam procuradas
+as sequências anotadas dentro dos arquivos dos genes preditos (i.e
+`GenesNucl.fa`). Este processo é feito com um script escrito na
+linguagem *perl*. Rode este comando para cada anotação ou base de dados
+usada (i.e. kegg e eggnog).
+
+**KEGG**
+
+    mkdir 10.Mapping
+
+    perl -ne 'if(/^>(\S+)/){$c=$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' 08.FunctionalAnnotation/GeneAnnotation_kegg_contigsIDs.txt > 10.Mapping/GeneNucl_kegg_seqs.fa
+
+**Loop**
+
+    # Crie uma nova pasta
+    mkdir 10.Mapping
+
+    ## 
+    for i in 08.FunctionalAnnotation/*_keggdb_contigsIDs.txt
+    do
+    BASE=$(basename $i _keggdb_contigsIDs.txt)
+      for j in 07.GenePrediction/${BASE}.fa
+      do
+      ID=$(basename $j ${BASE}.fa)
+    perl -ne 'if(/^>(\S+)/){$c=$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' $i $j > 10.Mapping/${BASE}_kegg_seqs.fa
+    done
+    done
+
+**EGGNOG**
+
+
+    perl -ne 'if(/^>(\S+)/){$c=$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' 08.FunctionalAnnotation/GeneAnnotation_eegnog_contigsIDs.txt > 10.Mapping/GeneNucl_eggnog_seqs.fa
+
+**Loop**
+
+    for i in 08.FunctionalAnnotation/*_eggnog_contigsIDs.txt
+    do
+    BASE=$(basename $i _eggnog_contigsIDs.txt)
+      for j in 07.GenePrediction/${BASE}.fa
+      do
+      ID=$(basename $j ${BASE}.fa)
+    perl -ne 'if(/^>(\S+)/){$c=$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' $i $j > 10.Mapping/${BASE}_eggnog_seqs.fa
+    done
+    done
+
+Use o comando `ls` para listar o conteúdo da pasta `10.Mapping/`.
+Perceba que tem dois arquivos por cada amostras ou montagem, um com as
+sequências anotadas com KEGG, e outra com as sequências anotadas com
+EggNOG.
+
+#### 6.2.3. Mapeamento
+
+**1. Criação do índice**
+
+Após a formatação das tabelas de anotações e a extração das sequências,
+será iniciado o processo de mapeamento. O primeiro paso é criar um índex
+das sequências anotadas e extraídas (`GeneNucl_kegg_seqs.fa`), usando
+**Bowtie2**.
+
+Entre na pasta do mapeamento:
+
+    cd 10.Mapping/
+
+Rode este comando para cada arquivo de sequências extraídas por base de
+dados que tiver:
+
+    bowtie2-build GeneNucl_kegg_seqs.fa GeneNucl_kegg_seqs.fa
+
+**Loop**
+
+O loop é muito útil se tiver mais de uma montagem. Assim, criará um
+índice para cada montagem.
+
+    for i in ./*_seqs.fa; do BASE=$(basename $i _seqs.fa); bowtie2-build $i $i; done
+
+**2. Obtenção arquivos `.sam`**
+
+Assim que criado(s) o(s) índice(s), pode se proceder ao comando do
+mapeamento, que irá criar arquivos `.sam` (*Sequence Alignment Map*)
+para cada amostra ou assembly e cada base de dados.
+
+    bowtie2 -p 6 -x GeneNucl_kegg_seqs.fa -1  ../02.CleanData/Sample1_1_paired.fq.gz -2 ../02.CleanData/Sample1_2_paired.fq.gz -S Sample1_kegg.sam
+
+**Loop**
+
+Com o seguinte loop, é possível fazer o mapeamento de várias amostras
+usando o mesmo único índice que proveem de uma únicam montagem (caso
+deste tutorial).
+
+    ## KEGG
+    for i in ../02.CleanData/*_1_paired.fq.gz
+    do
+    BASE=$(basename $i _1_paired.fq.gz)
+      for j in ./*_seqs.fa
+      db=$(basename $j _seqs.fa)
+    bowtie2 -p 6 -x $j -1 $i -2 ../02.CleanData/${BASE}_2_paired.fq.gz -S ${BASE}_{db}.sam
+    done
+
+    ## EGGNOG
+    for i in ../02.CleanData/*_1_paired.fq.gz
+    do
+    BASE=$(basename $i _1_paired.fq.gz)
+      for j in ./*_seqs.fa
+      db=$(basename $j _seqs.fa)
+    bowtie2 -p 6 -x $j -1 $i -2 ../02.CleanData/${BASE}_2_paired.fq.gz -S ${BASE}_{db}.sam
+    done
+
+Então ao finalizar o processo, terá dois arquivos `.sam` por cada
+amostra (Kegg, EggNOG).
+
+**3. `.sam` para `.bam`**
+
+Para facilidade na manipulação, os arquivos `.sam` devem ser
+transformados a `.bam` usando a ferramenta **SamTools**.
+
+    samtools view -b -S -o Sample1_kegg.bam Sample1_kegg.sam
+
+**Loop**
+
+    for i in ./*.sam
+    do
+    BASE=$(basename $i .sam)
+    samtools view -b -S -o ${BASE}.bam $i
+    done
+
+Agora você tem os mapeamentos tanto em formato `.sam` como `.bam`.
+
+**4. Ordenando e Indexando**
+
+O seguinte paso é ordenar os arquivos `.bam`
+
+    # Ordenando
+    samtools sort Sample1_kegg.bam -o Sample1_kegg_sorted.bam
+
+    # Indexando
+    samtools index Sample1_kegg_sorted.bam
+
+**Loop**
+
+    # Ordenando
+    for i in ./*.bam
+    do
+    BASE=$(basename $i .bam)
+    samtools sort $i -o ${BASE}_sorted.bam
+    done
+
+    # Indexando
+    for i in ./*_sorted.bam
+    do
+    BASE=$(basename $i _sorted.bam)
+    samtools index $i
+    done
+
+**5. Criando as estatísticas da anotação funcional**
+
+Neste paso serão geradas as estatísticas da anotação funcional.
+
+    # Estatísticas
+    samtools idxstats Sample1_kegg_sorted.bam > ../08.FunctionalAnnotation/Sample1_kegg_annotation_stats.txt
+
+    cd ../08.FunctionalAnnotation/
+
+    # Ordenando
+    sort -k1,1 Sample1_kegg_annotation_stats.txt > Sample1_kegg_annotation_stats_sorted.txt
+
+**Loop**
+
+    # Estatísticas
+    for i in ./*_sorted.bam
+    do
+    BASE=$(basename $i _sorted.bam)
+    samtools idxstats $i > ../08.FunctionalAnnotation/${BASE}_stats.txt
+    done
+
+    cd ../08.FunctionalAnnotation/
+
+    # Ordenando
+    for i in ./*_stats.txt
+    do
+    BASE=$(basename $i _stats.txt)
+    sort -k1,1 $i > ${BASE}_sorted.txt
+    done
 
 ## 6. Construção Tabela Final
 
