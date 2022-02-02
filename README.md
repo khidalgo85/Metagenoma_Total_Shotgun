@@ -1600,7 +1600,7 @@ usada (i.e. kegg e eggnog).
 
     mkdir 10.Mapping
 
-    perl -ne 'if(/^>(\S+)/){$c=$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' 08.FunctionalAnnotation/GeneAnnotation_kegg_contigsIDs.txt 07.GenePrediction/GenesNucl.fa> 10.Mapping/GeneNucl_kegg_seqs.fa
+    perl -ne 'if(/^>(\S+)/){$c=$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' 08.FunctionalAnnotation/GeneAnnotation_kegg_contigsIDs.txt 07.GenePrediction/GenesNucl.fa > 10.Mapping/GeneNucl_kegg_seqs.fa
 
 **Loop**
 
