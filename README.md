@@ -1600,7 +1600,7 @@ usada (i.e. kegg e eggnog).
 
     mkdir 10.Mapping
 
-    perl -ne 'if(/^>(\S+)/){$c=$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' 08.FunctionalAnnotation/GeneAnnotation_kegg_contigsIDs.txt > 10.Mapping/GeneNucl_kegg_seqs.fa
+    perl -ne 'if(/^>(\S+)/){$c=$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' 08.FunctionalAnnotation/GeneAnnotation_kegg_contigsIDs.txt 07.GenePrediction/GenesNucl.fa> 10.Mapping/GeneNucl_kegg_seqs.fa
 
 **Loop**
 
@@ -1773,10 +1773,41 @@ Neste paso serão geradas as estatísticas da anotação funcional.
     sort -k1,1 $i > ${BASE}_sorted.txt
     done
 
-## 6. Construção Tabela Final
+Use o comando `head` para dar uma olhada em algum dos arquivos (i.e
+`head Sample1_kegg_sorted.txt`).
+
+Em cada um desses arquivos terá 4 colunas:
+
+1.  nome da sequência
+2.  tamanho da sequência
+3.  quantidade de reads mapeados
+4.  quantidade de reads não mapeados
+
+## 7. Construção Tabela Final
 
 Finalmente é necessário construir uma tabela final com todas as
-anotações (taxonômica e funcional) de todas as montagens.
+anotações (taxonômica e funcional) de todas as amostras
+
+### 7.1. Análise Randômico do KEGG
+
+Este processo consiste em completar a informação da anotação do Kegg. Na
+anotação funcional foram obtidos os números KEGG ou KO (*Kegg
+Orthologies*) das sequências anotadas. No entanto esse KO não nos dá
+informação do nome do gene, ou da familia de enzimas o proteínas ele
+pertence. Para isto nesta fase será adicionada essa informação
+
+Faça [download](https://figshare.com/ndownloader/files/33953774) da
+tabela `kegg.tsv` que contém todas as informações da base de dados KEGG
+
+    # Voltando na pasta base
+    cd ../
+
+    # Download
+    curl -L https://figshare.com/ndownloader/files/33953774 -o kegg.tsv
+
+A continuação ordene o arquivo
+
+    sort -k1,1 kegg.tsv > kegg_sorted.tsv
 
 1.  **Formatando as tabelas de anotação funcional**: Usando linha de
     comando, serão escolhidas as colunas mais importantes.
