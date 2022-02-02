@@ -587,9 +587,12 @@ Use `less` para explorar o arquivo, ele deve se ver assim:
     Sample6.npo   Sample6   "#4bb092"
 
 Descarregue os arquivos `.npo` e o arquivo `Samples.txt`. Usando o
-seguinte script do R, grafique as curvas de saturação. \*Nota: todos os
-arquivos descarregados devem estar dentro de uma pasta só, p.e.
+seguinte script do R, grafique as curvas de saturação. **Nota:** todos
+os arquivos descarregados devem estar dentro de uma pasta só, p.e.
 `03.NonPareil`.
+
+Descarregue o script
+[Nonpareil](https://github.com/khidalgo85/Metagenoma_Total_Shotgun/blob/master/nonpareil.R)
 
 ``` r
 install.packages("Nonpareil") #para instalar o pacote
@@ -748,7 +751,7 @@ distâncias par a par:
 Por último, calcule as distâncias entre cada par de metagenomas usando
 `mash dist` e salve o resultado no arquivo `distancesOutput.tsv`.
 
-    mash dist 04.MinHash/reference.msh 04.MinHash/reference.msh -p 6 > 04.MinHash/distancesOutputFinal.tsv
+    mash dist 04.MinHash/reference.msh 04.MinHash/reference.msh -p 6 -t > 04.MinHash/distancesOutputFinal.tsv
 
 **Sintaxe** `mash dist [reference] [query] [options]`
 
@@ -758,6 +761,7 @@ Por último, calcule as distâncias entre cada par de metagenomas usando
     `fasta`.
 -   `query`: ídem
 -   `-p`: número de threads
+-   `-t`: indica o tipo de formato matriz
 
 Descarregue o output (`04.MinHash/distancesOutputFinal.tsv`) e use o
 seguinte script do R para plotar um heatmap com as distâncias.
@@ -765,28 +769,31 @@ seguinte script do R para plotar um heatmap com as distâncias.
 ``` r
 setwd("~/04.MinHash/")
 
- data <- read.table("distancesOutputFinal.tsv")
+# install.packages('dplyr')
+library(dplyr)
+# install.packages('stringr')
+library(stringr)
+# install.packages('tidyverse')
+library(tidyverse)
 
- #install.packages("vegan")
- library(vegan)
- set.seed(2)
- 
- dst = as.matrix(data)
- 
- #install.packages("gplots")
- library(gplots)
- set.seed(2)
- x <- matrix(rnorm(100), nrow = 5)
- dist.fn <- function(x) as.dist(1-cor(t(x)))
- hclust.com <- function(x) hclust(x, method="complete")
- 
- dev.off()
- h.ori <- heatmap.2(dst, trace="none", distfun=dist.fn, 
-                    hclustfun=hclust.com,dendrogram = "row",main = "MinHash Clusterization",
-                    cexRow=0.8, # Tamanho do texto no eixo y
-                    cexCol=0.8,adjCol = c(0.5,0.2),
-                    adjRow = c(0.05,0.),
-                    srtCol=90,offsetRow=0, offsetCol=0, keysize = 1.5)
+data <- read.table("distancesOutputFinal.tsv", comment.char = '', 
+                    header = TRUE ) %>% 
+  rename(X = X.query) 
+  
+
+data$X <- str_remove_all(data$X, "04.MinHash/")
+data$X <- str_remove_all(data$X, ".fq")
+
+names <- c("X", data[,1])
+
+colnames(data) <- names
+
+data <- column_to_rownames(data, var="X")
+
+library(pheatmap)
+
+
+pheatmap(data)
 ```
 
 Vai obter um heatmap com clusterização similar a este:
