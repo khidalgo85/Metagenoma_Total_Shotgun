@@ -1250,7 +1250,16 @@ for i in ../02.CleanData/*_1_paired.fq.gz
 do
 BASE=$(basename $i _1_paired.fq.gz)
   for j in ./*_seqs.fa
-  db=$(basename $j _seqs.fa)
+  db=$(basename $j kegg_seqs.fa)
+bowtie2 -p 6 -x $j -1 $i -2 ../02.CleanData/${BASE}_2_paired.fq.gz -S ${BASE}_{db}.sam
+done
+
+## EGGNOG
+for i in ../02.CleanData/*_1_paired.fq.gz
+do
+BASE=$(basename $i _1_paired.fq.gz)
+  for j in ./*_seqs.fa
+  db=$(basename $j eggnog_seqs.fa)
 bowtie2 -p 6 -x $j -1 $i -2 ../02.CleanData/${BASE}_2_paired.fq.gz -S ${BASE}_{db}.sam
 done
 ```
