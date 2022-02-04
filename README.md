@@ -2093,11 +2093,7 @@ Amostra 6
 
 A continuação, crie os nomes das colunas com `echo`
 
-<<<<<<< HEAD
     echo -e 'ID\tKO\tLevel1\tLevel2\tLevel3\tGeneName\tTaxonomia\tLength\tSample1\tSample2\tSample3\tSample4\tSample5\tSample6' > myheaders.txt
-=======
-    echo -e 'ID\tKO\tLevel1\tLevel2\tLevel3\tGeneName\tTaxonomia\tLength\tSample1\tSample2\tSample3\tSample4'\tSample5\tSample6 > myheaders.txt
->>>>>>> aca82c71d0a3fd6a0993c4f55827c7bac4aa4e82
 
 Concatene com a tabela acumulada:
 
