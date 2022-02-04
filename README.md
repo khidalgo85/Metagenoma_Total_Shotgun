@@ -1802,12 +1802,18 @@ O seguinte paso é ordenar os arquivos `.bam`
 
 **5. Criando as estatísticas da anotação funcional**
 
-**Nota:** Daqui para frente, você se enfrentará a vários comando de
+**Nota:** Daqui para frente, você se enfrentará a vários comandos de
 formatação (remoção de colunas, ordenação, união de tabelas, etc). Use
 sempre algum comando para dar uma olhada nos output de cada passo
 (i.e. `less`, `head`) e entender o que está acontecendo em cada comando.
 
 Neste paso serão geradas as estatísticas da anotação funcional.
+
+> 🇪🇸 **Nota:** De este punto para adelante, usted se enfrentará a varios
+> comandos de formatación (remoción de columnas, ordenar, unión de
+> tablas, etc). Use siempre algum comando para dar una mirada en los
+> output de cada paso (i.e. `less`, `head`) y entender lo que está
+> pasando en cada comando.
 
     # Estatísticas
     samtools idxstats Sample1_kegg_sorted.bam > ../08.FunctionalAnnotation/Sample1_kegg_annotation_stats.txt
@@ -1945,8 +1951,14 @@ números KO:
 O comando acima está pedindo para o sistema que a cada elemento `$i`
 dentro da pasta `11.RandomicAnalyses` que termine com a palavra
 `_ids.txt` execute o comando `sort` para ordenar com base na coluna 2 e
-ignorará a primeira coluna e salve num novo arquivo indicado após o
+ignore a primeira coluna e salve num novo arquivo indicado após o
 símbolo `>`.
+
+> 🇪🇸 El comando de arriba está pidiendo para el sistema que a cada uno
+> de los elementos `$i` dentro de la carpeta `11.RandomicAnalyses` que
+> termine con la palabra `_ids.txt`, ejecute el comando `sort` para
+> ordenar con base en la columna 2 e ignore la primera columna e salve
+> en un nuevo archivo indicado después del símbolo `>`.
 
 4.  **Adicionando a informação completa do KEGG**
 
@@ -1955,25 +1967,48 @@ KEGG `kegg_sorted.tsv`, que contem todas as categorias metabólicas para
 cada número KO para adicionar estas informações na tabela saída do paso
 anterior (`GeneNucl_sorted.txt`). A linha de comando a continuação
 contém vários comando anidados separados por \|. Isto indica para o
-sistema que a saída de um comando é a entrada do seguinte comando.
+sistema que a saída de um comando é a entrada do seguinte.
+
+> 🇪🇸 La siguiente etapa, comprende el uso de la tabal ordenada de las
+> informaciones de KEGG `kegg_sorted.tsv`, que contiene todas las
+> categórias metabólicas para cada número KO para adicionar estas
+> informaciones en la tabla de salida del paso anterior
+> (`GeneNucl_sorted.txt`). La línea de coomando a continuación contiene
+> varios comandos anidados separados por \|. Esto indica al sistema que
+> la salida de un comando es la entrada del siguiente.
 
     for i in 11.RandomicAnalyses/*_sorted.txt; do BASE=$(basename $i _sorted.txt); cat $i | while read line ; do echo "$line" | join -1 2 -2 1 -e"NA" -o1.1,0,2.2,2.3,2.4,2.5 -t $'\t' - kegg_sorted.tsv | shuf -n1 >> 11.RandomicAnalyses/${BASE}_randomic_analysis.tsv; done; done
 
 **Explicação do comando**
 
-O comando `cat` vai ler cada elemento `$i`, dentro da pasta
+O comando `cat` vai ler cada elemento `$i` dentro da pasta
 `11.RandomicAnalysis/` que termine com a palavra `_sorted.txt` (Tabela
-com os counts de cada número KO obtida após o mapeamento). Paralelamente
-o comando `while` vai ler cada linha, enquanto que `join` ira a juntar
-as informações, da seguinte maneira; o paramêtro `-1` e `-2` indica
-quais serão as colunas comunes entre cada arquivo (arquivo 1 e
-arquivo2), `-2` indica que quando não tiver informação em algum das
-colunas completar com NA. O paramêtro `-o`, sinaliza quais serão as
-colunas de saída no novo arquivo. O primeiro número indica o arquivo e o
-segundo, separado por ponto indica a coluna. Assim, cada coluna chamada
-é separada da seguinte com coma. O flag `-t`, e usado para sinalizar
-como serão separadas as colunas. Logo depois está o segundo arquivo que
-será usado `kegg.tsv`.
+com os counts de cada número KO/gene obtida após o mapeamento).
+Paralelamente o comando `while` vai ler cada linha, enquanto que `join`
+irá a juntar as informações da seguinte maneira; o parâmetro `-1` e `-2`
+indica quais serão as colunas comunes entre cada arquivo (arquivo 1 e
+arquivo2), `-e` indica que quando não tiver informação em alguma das
+linhas das duas colunas, complete com NA. O parâmetro `-o`, sinaliza
+quais serão as colunas de saída no novo arquivo. O primeiro número
+indica o arquivo e o segundo, separado por ponto indica a coluna. Assim,
+cada coluna chamada é separada da seguinte com coma. O flag `-t`, e
+usado para sinalizar como serão separadas as colunas. Logo depois está o
+segundo arquivo que será usado `kegg.tsv`.
+
+> 🇪🇸 El comando `cat` va a leer cada elemento `$i` dentro de la carpeta
+> `11.RandomicAnalysis/` que termine con la palabra `_sorted.txt` (tabla
+> con el conteo de cada número KO/gen obtenida después del mapeo).
+> Paralelamente el comando `while` va ir leyendo cada línea, mientras
+> que `join` irá a juntar las informaciones de la siguiente manera; el
+> parámetro `-1` y `-2` indica cuales serán las columnas comunes entre
+> cada archivo (archivo 1 y archivo 2), `-e` indica que cuando no exista
+> información en alguna de las líneas de las dos columnas, complete com
+> NA. El parámetro `-o`, indica cuales serán las columnas de salida del
+> nuevo archivo. El primero número indica el archivo e el segundo,
+> seprado por ponto, indica la columna. Así, cada columna llamada es
+> separada de la siguiente con coma. El flag `-t`, es usado para avisar
+> como serán separadas las columnas. En seguida está el segundo archivo
+> a ser usado `kegg.tsv`.
 
 **Nota:** Lembre de dar uma olhada nos arquivos que vai gerando
 (i.e. `less`, `head`)
@@ -1996,32 +2031,55 @@ juntar as tabelas com todos os dados.
 
 Crie um diretório para colocar as tabelas intermediarias:
 
+> 🇪🇸 Despues de todas las formataciones anteriores, ahora estamos listos
+> para juntar las tablas con todos los datos.
+>
+> Cree un diretorio para colocar las tablas intermedias:
+
     mkdir tmp
 
 1.  **Caso 1: Um assembly de uma amostra só**
 
-Primero vamos a unir a tabela com arruma com todas as informações da
-análise randômico do Kegg (Números KO mais levels) com a tabela de
-anotação taxonômica, usando comando `join`.
+Primero vamos a unir a tabela com todas as informações da análise
+randômico do Kegg (Números KO mais levels) com a tabela de anotação
+taxonômica, usando o comando `join`.
+
+> 🇪🇸 Primero vamos a unir la tabla con todas las informaciones del
+> análisis randómico de Kegg (Números KO más níveles) con la tabla de
+> anotación taxonómica, usando el comando `join`.
 
     join -j 1 -o 1.1,1.2,1.3,1.4,1.5,1.6,2.2 11.RandomicAnalyses/GeneNucl_kegg_randomic_sorted.tsv 09.TaxonomicAnnotation/GeneNucl_formated.tsv -t $'\t' > tmp/GeneNucl.txt
 
 **Explicação do comando**
 
-O `join` vai juntar as informações de duas tabelas. O paramêtro `-j` é
+O `join` vai juntar as informações de duas tabelas. O parâmetro `-j` é
 igual que `-1`, que vai indicar qual é a coluna comúm que vai ser usada
-para unir. No flag `-o` se informam como serão as colunas e `-t` qual
-será o separador, como foi explicado anteriormente. Então, para o nosso
-caso: faça join, usando a coluna um que é comúm as dois arquivos (IDs
-das sequêcnias), no output organize as colunas assim: a coluna 1 a 6 do
-arquivo 1 (`11.RandomicAnalyses/GeneNucl_kegg_randomic_sorted.tsv`) e a
-coluna 2 do arquivo 2 (`09.TaxonomicAnnotation/GeneNucl_formated.tsv`),
-separe as colunas por tabulações (`'\t'`) e salve (`<`) no arquivo
+para unir. No flag `-o` se informam como será a organização das colunas
+e `-t` qual será o separador, como foi explicado anteriormente. Então,
+para o nosso caso: faça join, usando a coluna 1 que é comúm as dois
+arquivos (IDs das sequências), no output organize as colunas assim: las
+colunas 1 a 6 do arquivo 1
+(`11.RandomicAnalyses/GeneNucl_kegg_randomic_sorted.tsv`) e a coluna 2
+do arquivo 2 (`09.TaxonomicAnnotation/GeneNucl_formated.tsv`), separe as
+colunas por tabulações (`'\t'`) e salve (`<`) no arquivo
 `tmp/GeneNucl.txt`.
 
 Até ai você tem uma tabela com as informações completas do KEGG e a
 anotação taxonômica. Agora deve colocar as informações númericas,
 obtidas no mapeamento.
+
+> 🇪🇸 `join` va a juntar las informaciones de dos tablas. El parámetro
+> `-j` es igual que `-1`, que va a indicar cual es la columna común que
+> va a ser usada para unir. Con el flag `-o`, se informan como serán la
+> organización de las columnas e `-t` cual será el separador, como fue
+> explicado anteriormente. Entonces, para nuestro caso: Haga el join,
+> usando la columna 1 que es comúm en los dos archivos (IDs de las
+> secuencias), en el output organice las columnas así: las columnas 1 a
+> 6 del archivo 1
+> (`11.RandomicAnalyses/GeneNucl_kegg_randomic_sorted.tsv`) e la columa
+> 2 del archivo 2 (`09.TaxonomicAnnotation/GeneNucl_formated.tsv`),
+> separe las columnas con tabulaciones (`'\t'`) e salve (`<`) en el
+> archivo `tmp/GeneNucl.txt`.
 
     join -j 1 -o 1.1,1.2,1.3,1.4,1.5,1.6,1.7,2.2,2.3 tmp/GeneNucl.txt 08.FunctionalAnnotation/GenesNucl_kegg_sorted_formated.txt -t $'\t' > tmp/GeneNucl_tax_count.txt
 
@@ -2031,15 +2089,31 @@ tamanho da sequência (coluna 2) e outra com o número de counts (coluna
 arquivo 1 (coluna 7, que agora é a taxonomia). Você já deveu perceber
 que as tabelas não tem títulos nas colunas. Então vamos criá-los:
 
+> 🇪🇸 En ese comando, ahora está adicionando dos columnas más, una que es
+> el tamaño de la secuencia (columna2) e otra con el número de counts
+> (columna 3). Perciba que en el flag `-o` fue ahora llamado una columna
+> más del archivo 1 (columna 7, que ahora es la taxonomia). Ud ya debió
+> percibir que las tablas no tiene títulos en las columnas. Entonces
+> vamos a crearlos:
+
     echo -e 'ID\tKO\tLevel1\tLevel2\tLevel3\tGeneName\tTaxonomia\tLength\SampleCounts' > myheaders.txt
 
 Assim, com o comando `echo` você vai imprimir dentro de um arquivo os
 nomes das colunas. O flag `-e` permite colocar a formatação de colunas,
-adicionando as barras invertidas `\t` para indicar que serão separadas
-por tabulações.
+adicionando `\t` para indicar que as palavras serão separadas por
+tabulações.
 
 Por último, tem que colocar esses títulos na tabela organizada, porém
 antes crie um diretório para colocar as tabelas finais:
+
+> 🇪🇸 Así, con el comando `echo` usted va a imprimit dentro de un archivo
+> los nombres de las columnas. El flag `-e` permite colocar la
+> formatación de las columnas, adicionando `\t` para indicar que las
+> palabras serán separadas por tabulciones.
+>
+> Por último, tiene que colocar los títulos creados en la tabla
+> organizada, pero antes cree un directorio para colocar las tablas
+> finales.
 
     mkdir 12. FinalTables
 
@@ -2052,18 +2126,31 @@ Ao igual que no caso 1, primeiro serão unidas as tabelas com as
 informações completas de KEGG e a taxonomia, as quais é uma por
 co-assembly:
 
+> 🇪🇸 Al igual que en el caso 1, primero serán unidas las tablas con las
+> informaciones completas de KEGG e la taxonomia, las cuales
+> correspondem a una por co-assembly
+
     join -j 1 -o 1.1,1.2,1.3,1.4,1.5,1.6,2.2 11.RandomicAnalyses/coassembly_kegg_randomic_sorted.tsv 09.TaxonomicAnnotation/coassembly_formated.tsv -t $'\t' > tmp/coassembly.txt
 
 A continuação junte as informações númericas (tamanho da
 sequência/coluna 2 e counts de cada gene/coluna 3), obtido no
-mapeamento). Está informação corresponde a uma tabela por amostra.
+mapeamento). Esta informação corresponde a uma tabela por amostra.
+
+> 🇪🇸 A continuación junte las informaciones númericas (tamaño de la
+> secuencia/columna 2 y conteo de cada gene/columna 3, obtenidas en el
+> mapeo). Esta información corresponde a una tabla por muestra.
 
     join -j 1 -o 1.1,1.2,1.3,1.4,1.5,1.6,1.7,2.2,2.3 tmp/coassembly.txt 08.FunctionalAnnotation/Sample1_kegg_sorted_formated.txt -t $'\t' > tmp/Sample1_tax_count.txt
 
 Logo enseguida, adicione a coluna de counts da seguinte amostra (use uma
 ordem lógica para juntar amostra trás amostra). Agora não é mais
-necessário colocar adicionar a coluna do tamanho da sequência porque já
-foi colocada com a amostra 1.
+necessário adicionar a coluna do tamanho da sequência porque já foi
+colocada com a amostra 1.
+
+> 🇪🇸 En seguida, adicione la columna de conteo de la siguente muestra
+> (use un orden lógico para juntar muestra por muestra). Ahora no es más
+> necesario adicionar la columna del tamaño de la secuencia porque ya
+> gue colocada con la muestra 1
 
     join -j 1 -o 1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.3 tmp/Sample1_tax_count.txt 08.FunctionalAnnotation/Sample2_kegg_sorted_formated.txt -t $'\t' > tmp/Sample12_tax_count.txt
 
@@ -2073,6 +2160,13 @@ chamada a coluna 3 do arquivo 2, que corresponde com os counts para a
 amostra 2.
 
 Adicione a amostra 3:
+
+> 🇪🇸 Perciba que, de nuevo aumentó el número de columas del archivo 1
+> (columa 8 - tamaño de la secuencia, columa 9 conteo de la muestra 1),
+> y que fue llamada la columna 3 del archivo 2, que corresponde a el
+> conteo de la muestra 2.
+>
+> Adicione la muestra 3:
 
     join -j 1 -o 1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,1.10,2.3 tmp/Sample12_tax_count.txt 08.FunctionalAnnotation/Sample3_kegg_sorted_formated.txt -t $'\t' > tmp/Sample123_tax_count.txt
 
@@ -2102,6 +2196,8 @@ Concatene com a tabela acumulada:
     cat myheaders.txt tmp/Sample123456_tax_count.txt > 12.FinalTables/Total_final_table.tsv
 
 Ao final você terá sua tabela final com TODAS as informações.
+
+    less 12.FinalTables/Total_final_table.tsv
 
 ------------------------------------------------------------------------
 
