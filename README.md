@@ -716,7 +716,7 @@ arquivos originais, que estão dentro da pasta `00.RawData/`.
     for i in 02.CleanData/*_1_paired.fq.gz
     do
     BASE=$(basename $i _1_paired.fq.gz)
-    cat $i 02.CleanData/${BASE}_2_paired.fastq.gz > 04.MinHash/${BASE}.fq
+    cat $i 02.CleanData/${BASE}_2_paired.fq.gz > 04.MinHash/${BASE}.fq
     done
 
 🇧🇷 Depois será criado um *sketch* para combinar todas as amostras.
@@ -1396,7 +1396,7 @@ dados por vez*)
     mkdir 08.FunctionalAnnotation
 
     ## Diammond
-    diamond blastx --more-sensitive --threads 6 -k 1 -f 6 qseqid qlen sseqid sallseqid slen qstart qend sstart send evalue bitscore score length pident qcovhsp --id 60 --query-cover 60 -d dbs/keggdb.dmnd --query 07.GenePrediction/GenesNucl.fa -o 08.FunctionalAnnotation/GeneAnnotation_kegg.txt --tmpdir /dev/shm
+    diamond blastx --more-sensitive --threads 6 -k 1 -f 6 qseqid qlen sseqid sallseqid slen qstart qend sstart send evalue bitscore score length pident qcovhsp --id 60 --query-cover 60 -d dbs/keggdb.dmnd --query 07.GenePrediction/GenesNucl.fa -o 08.FunctionalAnnotation/GenesNucl_kegg.txt --tmpdir /dev/shm
 
 **SINTAXE**
 
@@ -1440,7 +1440,7 @@ foram guardados no arquivo `kegg_annotation.txt`.
 > 🇪🇸 Con el comando anterior fue realizada la anotación del co-assembly
 > de todas las muestras `scaffolds.fasta` con la base de datos
 > `kegg.dmnd` y los datos fueron guardadas en el archivo
-> `GeneAnnotation_kegg.txt`.
+> `GenesNucl_kegg.txt`.
 
 Se tiver mais de uma montagem e quiser rodar todas e as duas bases de
 dados ao mesmo tempo, pode usar o seguinte loop `for`:
@@ -1491,7 +1491,9 @@ deve ser feito para cada uma das predições de ORFs de cada montagem.
 > este procedimiento debe ser hecho apra cada una de las predicciones de
 > ORFs de cada ensamble.
 
-    kraken2 --db mainDB 07.GenePrediction/GenesNucl.fa 
+    mkdir 09.TaxonomicAnnotation
+
+    kraken2 --db mainDB 07.GenePrediction/GenesNucl.fa > mkdir 09.TaxonomicAnnotation/GenesNucl_tax_annoted.tsv
 
 **SINTAXE**
 
@@ -1511,7 +1513,7 @@ loop:
     for i in 07.GenePrediction/*.fa
     do
     BASE=$(basename $i .fa)
-    kraken2 --db mainDB $i
+    kraken2 --db mainDB $i > 09.TaxonomicAnnotation/${BASE}_taxa_annoted.tsv
     done
 
 O arquivo de saída é uma tabela `.tsv` por cada montagem. As colunas
@@ -1523,6 +1525,14 @@ estão organizadas da seguinte forma:
 3.  Identificação Taxonômica
 4.  Tamanho da sequência em bp.
 5.  Mapeamento LCA de cada *k*-mer.
+
+Depois de obtida a tabela de anotação taxonômica, é necessário ordenar
+pela primeira coluna (IDs das sequências):
+
+    for i in 09.TaxonomicAnnotation/*_taxa_annoted.tsv
+    do
+    BASE=$(basename $i _taxa_annoted.tsv)
+    sort -k1,1 $i > 09.TaxonomicAnnotation/${BASE}_tax_annoted_sorted.tsv
 
 ## 6. Mapeamento
 
@@ -1546,10 +1556,10 @@ Para a instalação das ferramentas do mapeamento, crie um ambiente
 virtual chamado **Mapping**.
 
     # Crie o ambiente
-    conda create -n Mapping
+    conda create -n mapping
 
     # Ative o ambiente
-    conda activate Mapping
+    conda activate mapping
 
 #### 6.1.1. Bowtie2
 
@@ -1572,7 +1582,7 @@ Isto pode ser feito usando o comando `cut`.
 > para después extraerlas. Esto puede ser realizado usando o comando
 > `cut`.
 
-    cut -f1 08.FunctionalAnnotation/GeneAnnotation_kegg.txt > 08.FunciontalAnnotation/GeneAnnotation_kegg_contigsIDs.txt
+    cut -f1 08.FunctionalAnnotation/GenesNucl_keggdb.txt > 08.FunctionalAnnotation/GenesNucl_keggdb_contigsIDs.txt
 
 Com o loop, você consegue fazer ao mesmo tempo o processo para todas as
 tabelas de anotações que tiver (p.e. mais de um assembly e/ou mais de
@@ -1584,7 +1594,7 @@ uma base de dados).
 
 **Loop**
 
-    for i in 08.FunctionalAnnotation/*.txt; do BASE=$(basename $i _formated.txt); cut -f1 $i > 08.FunctionalAnnotation/${BASE}_contigsIDs.txt; done
+    for i in 08.FunctionalAnnotation/*.txt; do BASE=$(basename $i .txt); cut -f1 $i > 08.FunctionalAnnotation/${BASE}_contigsIDs.txt; done
 
 **SINTAXE** `cut [options] file`
 
@@ -1595,7 +1605,7 @@ No comando anterior, basicamente são criados novos arquivos
 contém os IDs.
 
 A continuação, use os últimos arquivos gerados
-(`GeneAnnotation_kegg_contigsIDs.txt`) para extrair as sequências desses
+(`GenesNucl_keggdb_contigsIDs.txt`) para extrair as sequências desses
 genes anotados. Ou seja, use a lista dos IDs, para que sejam procuradas
 as sequências anotadas dentro dos arquivos dos genes preditos (i.e
 `GenesNucl.fa`). Este processo é feito com um script escrito na
@@ -1607,7 +1617,7 @@ anotação ou base de dados usada (i.e. kegg e eggnog).
 > anotación, que contienen los IDs.
 >
 > A continuación, use los ultimos archivos generados
-> (`GeneAnnotation_kegg_contigsIDs.txt`) para extraer las secuencias de
+> (`GenesNucl_keggdb_contigsIDs.txt`) para extraer las secuencias de
 > esos genes anotados. O sea, use la lista de los IDs, para que sean
 > buscadas las secuencias anotadas dentro de los archivos de predicción
 > de genes (i.e. `GenesNucl.fa`). Este proceso es hecho con un script
@@ -1619,7 +1629,7 @@ anotação ou base de dados usada (i.e. kegg e eggnog).
 
     mkdir 10.Mapping
 
-    perl -ne 'if(/^>(\S+)/){$c=$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' 08.FunctionalAnnotation/GeneAnnotation_kegg_contigsIDs.txt 07.GenePrediction/GenesNucl.fa > 10.Mapping/GeneNucl_kegg_seqs.fa
+    perl -ne 'if(/^>(\S+)/){$c=$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' 08.FunctionalAnnotation/GenesNucl_keggdb_contigsIDs.txt 07.GenePrediction/GenesNucl.fa > 10.Mapping/GenesNucl_keggdb_seqs.fa
 
 **SINTAXE** `perl script input1 input2`
 
@@ -1631,16 +1641,11 @@ anotação ou base de dados usada (i.e. kegg e eggnog).
     # Crie uma nova pasta
     mkdir 10.Mapping
 
-    ## 
-    for i in 08.FunctionalAnnotation/*_keggdb_contigsIDs.txt
-    do
-    BASE=$(basename $i _keggdb_contigsIDs.txt)
-      for j in 07.GenePrediction/${BASE}.fa
-      do
-      ID=$(basename $j ${BASE}.fa)
-    perl -ne 'if(/^>(\S+)/){$c=$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' $i $j > 10.Mapping/${BASE}_kegg_seqs.fa
-    done
-    done
+    ## KEGG
+    for i in 08.FunctionalAnnotation/*_ekeggdb_contigsIDs.txt; do BASE=$(basename $i _keggdb_contigsIDs.txt);   for j in 07.GenePrediction/${BASE}.fa;   do   ID=$(basename $j ${BASE}.fa); perl -ne 'if(/^>(\S+)/){$c=$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' $i $j > 10.Mapping/${BASE}_keggdb_seqs.fa; done; done
+
+    ## EggNOG
+    for i in 08.FunctionalAnnotation/*_eggnog_contigsIDs.txt; do BASE=$(basename $i _eggnog_contigsIDs.txt);   for j in 07.GenePrediction/${BASE}.fa;   do   ID=$(basename $j ${BASE}.fa); perl -ne 'if(/^>(\S+)/){$c=$i{$1}}$c?print:chomp;$i{$_}=1 if @ARGV' $i $j > 10.Mapping/${BASE}_eggnog_seqs.fa; done; done
 
 Use o comando `ls` para listar o conteúdo da pasta `10.Mapping/`.
 Perceba que tem dois arquivos por cada amostras ou montagem, um com as
@@ -1658,13 +1663,13 @@ EggNOG.
 
 Após a formatação das tabelas de anotações e a extração das sequências,
 será iniciado o processo de mapeamento. O primeiro paso é criar um índex
-das sequências anotadas e extraídas (`GeneNucl_kegg_seqs.fa`), usando
+das sequências anotadas e extraídas (`GenesNucl_keggdb_seqs.fa`), usando
 **Bowtie2**.
 
 > 🇪🇸 Después de la formatación de las tablas de anotaciones e la
 > extracción de las secuencias, será iniciado el proceso de mapeo. El
 > primero paso es crear un índice de las secuencias anotadas y extraidas
-> (`GeneNucl_kegg_seqs.fa`), usando **Bowtie2**.
+> (`GenesNucl_keggdb_seqs.fa`), usando **Bowtie2**.
 
 Entre na pasta do mapeamento:
 
@@ -1673,7 +1678,7 @@ Entre na pasta do mapeamento:
 Rode este comando para cada arquivo de sequências extraídas por base de
 dados que tiver:
 
-    bowtie2-build GeneNucl_kegg_seqs.fa GeneNucl_kegg_seqs.fa
+    bowtie2-build GenesNucl_keggdb_seqs.fa GenesNucl_keggdb_seqs.fa
 
 **SINTAXE** `bowtie2-build referência índice_name`
 
@@ -1697,7 +1702,7 @@ para cada amostra ou assembly e cada base de dados.
 > mapeo, que irá crear los archivos `.sam` (*Sequence Alignment Map*)
 > para cada muestra o para cada ensamble y cada base de datos.
 
-    bowtie2 -p 6 -x GeneNucl_kegg_seqs.fa -1  ../02.CleanData/Sample1_1_paired.fq.gz -2 ../02.CleanData/Sample1_2_paired.fq.gz -S Sample1_kegg.sam
+    bowtie2 -p 6 -x GenesNucl_keggdb_seqs.fa -1  ../02.CleanData/Sample1_1_paired.fq.gz -2 ../02.CleanData/Sample1_2_paired.fq.gz -S Sample1_kegg.sam
 
 **SINTAXE** `bowtie2 -p threads -x index -1 pair1 -2 pair2 -S file.sam`
 
@@ -1719,22 +1724,10 @@ deste tutorial).
 > caso de este tutorial).
 
     ## KEGG
-    for i in ../02.CleanData/*_1_paired.fq.gz
-    do
-    BASE=$(basename $i _1_paired.fq.gz)
-      for j in ./*_seqs.fa
-      db=$(basename $j kegg_seqs.fa)
-    bowtie2 -p 6 -x $j -1 $i -2 ../02.CleanData/${BASE}_2_paired.fq.gz -S ${BASE}_{db}.sam
-    done
+    for i in ../02.CleanData/*_1_paired.fq.gz; do BASE=$(basename $i _1_paired.fq.gz); for j in ./*keggdb_seqs.fa; do bowtie2 -p 6 -x $j -1 $i -2 ../02.CleanData/${BASE}_2_paired.fq.gz -S ${BASE}_kegg.sam; done; done
 
     ## EGGNOG
-    for i in ../02.CleanData/*_1_paired.fq.gz
-    do
-    BASE=$(basename $i _1_paired.fq.gz)
-      for j in ./*_seqs.fa
-      db=$(basename $j eggnog_seqs.fa)
-    bowtie2 -p 6 -x $j -1 $i -2 ../02.CleanData/${BASE}_2_paired.fq.gz -S ${BASE}_{db}.sam
-    done
+    for i in ../02.CleanData/*_1_paired.fq.gz; do BASE=$(basename $i _1_paired.fq.gz); for j in ./*eggnog_seqs.fa; do bowtie2 -p 6 -x $j -1 $i -2 ../02.CleanData/${BASE}_2_paired.fq.gz -S ${BASE}_eggnog.sam; done; done
 
 Então ao finalizar o processo, terá dois arquivos `.sam` por cada
 amostra (Kegg, EggNOG).
@@ -1880,9 +1873,73 @@ tabela `kegg.tsv` que contém todas as informações da base de dados KEGG
     # Download
     curl -L https://figshare.com/ndownloader/files/33953774 -o kegg.tsv
 
-A continuação ordene o arquivo
+A continuação ordene o arquivo pelo código KO:
 
     sort -k1,1 kegg.tsv > kegg_sorted.tsv
+
+Agora é momento de trabalhar na formatação das tabelas de anotação de
+cada amostra:
+
+1.  **Separando a terceira coluna**
+
+A terceira coluna da tabela original da anotação taxonômica, traz o
+código de acesso do NCBI e separado por \| o número KO, por exemplo:
+WP000000.0 \| K00001. O seguinte comando separa essas informações em
+dois colunas usando um script de *Perl*:
+
+> 🇪🇸 La tercera columna de la tabla original de la anotación taxonómica,
+> tiene el código de acceso del NCBI y separada por \|, el número KO,
+> por exemplo: WP000000.0 \| K00001. El siguiente comando separa esas
+> informaciones en dos columnas usando un script de *Perl*:
+
+    mkdir 11.RandomicAnalyses
+
+    for i in 08.FunctionalAnnotation/*_keggdb.txt
+    do
+    BASE=$(basename $i _keggdb)
+    perl -pe 's/\|?(?:\s+gi|ref)?\|\s*/\t/g' $i > 11.RandomicAnalyses/${BASE}.txt
+    done
+
+2.  **Extraindo os números KO**
+
+<!-- -->
+
+    for i in 11.RandomicAnalyses/*_keggdb.txt; do BASE=$(basename $i _keggdb.txt); cut -f1,4 $i > 11.RandomicAnalyses/${BASE}_kegg_ids.txt; done
+
+O comando anterior usa o comando `cut` para cortar as colunas 1 (IDs das
+sequências) e 4 (Kegg IDs/ Números KO).
+
+3.  **Ordenando pelos números KO**
+
+A continuação, usando o comando `sort`, será organizada a tabela pelos
+números KO:
+
+    for i in 11.RandomicAnalyses/*_ids.txt
+    do
+    BASE=$(basename $i _ids.txt)
+    sort -k2,2 $i > 11.RandomicAnalyses/${BASE}_sorted.txt
+    done
+
+4.  **Adicionando a informação completa do KEGG**
+
+A seguinte etapa, compreende o uso da tabela ordenada das informações do
+KEGG `kegg_sorted.tsv`, que contem todas as categorias metabólicas para
+cada número KO para adicionar estas informações na tabela saída do paso
+anterior (`GeneNucl_sorted.txt`). A linha de comando a continuação
+contém vários comando anidados separados por \|. Isto indica para o
+sistema que a saída de um comando é a entrada do seguinte comando.
+
+    for i in 11.RandomicAnalyses/*_kegg_sorted.txt; do BASE=$(basename $i _kegg_sorted.txt); cat $i | while read line ; do echo "$line" | join -1 2 -2 1 -e"NA" -o1.1,0,2.2,2.3,2.4,2.5 -t $'\t' - kegg_sorted.tsv | shuf -n1 >> 11.RandomicAnalyses/${BASE}_keggs_randomic_analysis.tsv; done; done
+
+5.  **Ordenando a tabela pelos IDs das sequências**
+
+Agora é momento de ordenar a tabela pela primeira coluna, IDs das
+sequências.
+
+    for i in 11.RandomicAnalyses/*_randomic_analysis.tsv
+    do
+    BASE=$(basename $i _keggs_randomic_analysis.tsv)
+    sort -k1,1 $i > 11.RandomicAnalyses/${BASE}_keggs_randomic_analysis_sorted.tsv
 
 ------------------------------------------------------------------------
 
