@@ -336,7 +336,7 @@ Para os dados aqui analizados se usara a seguinte linha de comando:
     mkdir unpaired
 
     # Corra Trimmomatic
-    trimmomatic PE -threads 10 00.RawData/Sample1_1.fastq.gz 00.RawData/Sample1_2.fastq.gz 02.CleanData/Sample1_1_paired.fastq.gz unpaired/Sample1_1_unpaired.fastq.gz 02.CleanData/Sample1_2_paired.fastq.gz unpaired/Sample1_2_unpaired.fastq.gz LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:150
+    trimmomatic PE -threads 10 00.RawData/Sample1_1.fq.gz 00.RawData/Sample1_2.fq.gz 02.CleanData/Sample1_1_paired.fq.gz unpaired/Sample1_1_unpaired.fq.gz 02.CleanData/Sample1_2_paired.fq.gz unpaired/Sample1_2_unpaired.fq.gz LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:150
 
 🇧🇷 Com o comando anterior você tem que rodar a linha de comando para
 cada amostra. Se quiser rodar todas as amostras de maneira automâtica é
@@ -349,8 +349,8 @@ possível usar um *loop* `for` para executar esta tarefa.
     # loop
     for i in 00.RawData/*1.fastq.gz 
     do
-    BASE=$(basename $i 1.fastq.gz)
-    trimmomatic PE -threads 10 $i  00.RawData/${BASE}2.fastq.gz 02.CleanData/${BASE}1_paired.fq.gz unpaired/${BASE}1_unpaired.fq.gz 02.CleanData/${BASE}2_paired.fq.gz unpaired/${BASE}2_unpaired.fq.gz LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:100
+    BASE=$(basename $i 1.fq.gz)
+    trimmomatic PE -threads 10 $i  00.RawData/${BASE}2.fq.gz 02.CleanData/${BASE}1_paired.fq.gz unpaired/${BASE}1_unpaired.fq.gz 02.CleanData/${BASE}2_paired.fq.gz unpaired/${BASE}2_unpaired.fq.gz LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:100
     done
 
 **SINTAXE**
@@ -1084,8 +1084,8 @@ Explore o diretório do output usando o comando `ls`.
 ORFs (em inglês) dentro dos contig/scaffols. Ou seja, predizer onde
 iniciam e terminam os genes. Basicamente o programa procura por codons
 de inicio, principalmente **ATG**, porém, também são códons de iniciação
-**GTG** e **TTG**. Depois, procura os códons de parada, como **TAA**,
-**TAG** e **TGA**.
+**GTG** e **TTG**. Depois, o programa procura os códons de parada, como
+**TAA**, **TAG** e **TGA**.
 
 O programa a usar para a predição das ORFs em procariotos é [Prodigal
 v2.6.3 (*Prokaryotic Dynamic Programming Genefinding
@@ -1095,8 +1095,8 @@ Algorithm*)](https://github.com/hyattpd/prodigal/wiki).
 > o ORF (en inglés) dentro de los contigs/scaffolds. O sea, predecir
 > donde incian y terminan los genes. Basicamente el programa busca por
 > códones de inicio, principalmente **ATG**, sin embargo también son
-> códones de inico **GTG** e **TTG**. Después, busca los códones de
-> parada, como **TAA**, **TAG** y **TGA**.
+> códones de inico **GTG** e **TTG**. Después,el programa busca los
+> códones de parada, como **TAA**, **TAG** y **TGA**.
 >
 > El programa a usar para la predicción de ORFs en procariotos es
 > [Prodigal v2.6.3 (*Prokaryotic Dynamic Programming Genefinding
@@ -1157,7 +1157,7 @@ processo com todas as amostras:
 🇧🇷 Este formato guarda as informações dos genes preditos pelo Prodigal.
 Explore-o (`less GenesCoordenates.gff`).
 
-Cada sequência comença com um *header* com as infromações da sequência
+Cada sequência comença com um *header* com as informações da sequência
 analizada, seguido de uma tabela separada por tabulações com informações
 dos genes encontrados em dita sequência.
 
@@ -1241,6 +1241,10 @@ genes encontrados:
     -   **tscore**: *score* para o tipo de códon de inicio
     -   **mscore**: *score* pros sinais restantes (tipo de códon de
         parada e informações da fita principal / reversa).
+
+Uma vez terminado o processo, pode explorar os diferentes arquivos de
+saída para conhecer a fondo a estrutura de cada um deles e as
+informações que cada um tem.
 
 ## 5. Anotação de genes
 
@@ -1908,9 +1912,9 @@ A continuação ordene o arquivo pelo código KO:
 Agora é momento de trabalhar na formatação das tabelas de anotação de
 cada amostra:
 
-1.  **Separando a terceira coluna**
+**1. Separando a terceira coluna**
 
-A terceira coluna da tabela original da anotação taxonômica, traz o
+A terceira coluna da tabela original da anotação funcional, traz o
 código de acesso do NCBI e separado por \| o número KO, por exemplo:
 WP000000.0 \| K00001. O seguinte comando separa essas informações em
 dois colunas usando um script de *Perl*:
@@ -1928,16 +1932,14 @@ dois colunas usando um script de *Perl*:
     perl -pe 's/\|?(?:\s+gi|ref)?\|\s*/\t/g' $i > 11.RandomicAnalyses/${BASE}.txt
     done
 
-2.  **Extraindo os números KO**
-
-<!-- -->
+**2. Extraindo os números KO**
 
     for i in 11.RandomicAnalyses/*.txt; do BASE=$(basename $i .txt); cut -f1,4 $i > 11.RandomicAnalyses/${BASE}_kegg_ids.txt; done
 
 O comando anterior usa o comando `cut` para cortar as colunas 1 (IDs das
 sequências) e 4 (Kegg IDs/ Números KO).
 
-3.  **Ordenando pelos números KO**
+**3. Ordenando pelos números KO**
 
 A continuação, usando o comando `sort`, será organizada a tabela pelos
 números KO:
@@ -1960,7 +1962,7 @@ símbolo `>`.
 > ordenar con base en la columna 2 e ignore la primera columna e salve
 > en un nuevo archivo indicado después del símbolo `>`.
 
-4.  **Adicionando a informação completa do KEGG**
+**4. Adicionando a informação completa do KEGG**
 
 A seguinte etapa, compreende o uso da tabela ordenada das informações do
 KEGG `kegg_sorted.tsv`, que contem todas as categorias metabólicas para
@@ -2013,7 +2015,7 @@ segundo arquivo que será usado `kegg.tsv`.
 **Nota:** Lembre de dar uma olhada nos arquivos que vai gerando
 (i.e. `less`, `head`)
 
-5.  **Ordenando a tabela pelos IDs das sequências**
+**5. Ordenando a tabela pelos IDs das sequências**
 
 Agora é momento de ordenar a tabela pela primeira coluna, IDs das
 sequências.
@@ -2038,7 +2040,7 @@ Crie um diretório para colocar as tabelas intermediarias:
 
     mkdir tmp
 
-1.  **Caso 1: Um assembly de uma amostra só**
+**Caso 1: Um assembly de uma amostra só**
 
 Primero vamos a unir a tabela com todas as informações da análise
 randômico do Kegg (Números KO mais levels) com a tabela de anotação
@@ -2096,7 +2098,7 @@ que as tabelas não tem títulos nas colunas. Então vamos criá-los:
 > percibir que las tablas no tiene títulos en las columnas. Entonces
 > vamos a crearlos:
 
-    echo -e 'ID\tKO\tLevel1\tLevel2\tLevel3\tGeneName\tTaxonomia\tLength\SampleCounts' > myheaders.txt
+    echo -e 'ID\tKO\tLevel1\tLevel2\tLevel3\tGeneName\tTaxonomia\tLength\tSampleCounts' > myheaders.txt
 
 Assim, com o comando `echo` você vai imprimir dentro de um arquivo os
 nomes das colunas. O flag `-e` permite colocar a formatação de colunas,
@@ -2119,8 +2121,7 @@ antes crie um diretório para colocar as tabelas finais:
 
     cat myheaders.txt tmp/GeneNucl_tax_count.txt > 12.FinalTables/GeneNucl_final_table.tsv
 
-2.  **Caso 2: Co-assembly com duas ou mais amostras (caso deste
-    tutorial**
+**Caso 2: Co-assembly com duas ou mais amostras (caso deste tutorial**
 
 Ao igual que no caso 1, primeiro serão unidas as tabelas com as
 informações completas de KEGG e a taxonomia, as quais é uma por
